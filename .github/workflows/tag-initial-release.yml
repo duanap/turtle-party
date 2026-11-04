@@ -1,0 +1,30 @@
+name: Tag initial release
+
+on:
+  workflow_run:
+    workflows: [Tests]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Publish v0.3.0 tag if missing
+        run: |
+          if git ls-remote --exit-code --tags origin refs/tags/v0.3.0 >/dev/null; then
+            echo 'v0.3.0 exists; no change'
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git tag -a v0.3.0 -m 'Turtle Party v0.3.0'
+            git push origin refs/tags/v0.3.0
+          fi
