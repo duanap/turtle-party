@@ -1,0 +1,6 @@
+# Runtime snapshots contain private hands and token hashes.
+/data/
+*.log
+node_modules/
+.DS_Store
+.env
