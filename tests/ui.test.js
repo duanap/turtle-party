@@ -53,3 +53,23 @@ test('牌桌与结算显示真实的剩余乌龟牌',()=> {
   assert.match(app.innerHTML,/成功脱身/);
   assert.match(app.innerHTML,/♣/);
 });
+
+test('首页规则常显、界面中文以及数字房间号输入约束',()=>{
+  const {app,context}=ui();
+  assert.match(app.innerHTML,/home-rules/);
+  assert.doesNotMatch(app.innerHTML,/data-ui="help"|A LITTLE|AI 对战/);
+  vm.runInContext("state.form='join';render();",context);
+  assert.match(app.innerHTML,/inputmode="numeric"/);
+  assert.match(app.innerHTML,/pattern="\[0-9\]\{6\}"/);
+});
+
+test('被抽者只抬起被选中的那张手牌，取消选择会恢复',()=>{
+  const {app,context}=ui();const v=baseView();
+  v.targetPlayerId=v.myId;v.currentPlayerId='p1';
+  v.selection={actorId:'p1',targetId:v.myId,slot:1,turn:v.turn};
+  context.fixture=v;vm.runInContext('state.view=fixture;render();',context);
+  assert.match(app.innerHTML,/own-card being-selected/);
+  assert.match(app.innerHTML,/对方正在选这张牌/);
+  v.selection=null;vm.runInContext('state.view=fixture;render();',context);
+  assert.doesNotMatch(app.innerHTML,/own-card being-selected/);
+});

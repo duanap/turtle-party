@@ -118,7 +118,8 @@ test('AI memory: known card positions shift after a public draw and transfer wit
   assert.deepEqual(room.memory.get('p1').get('p0'),[{index:1,rank:'K'}]);
   const publicData=publicView(room,'p2');
   assert.equal(publicData.lastAction.slot,1);
-  assert.ok(!JSON.stringify(publicData).includes('C-K'));
+  assert.equal(publicData.lastAction.card.id,'C-K');
+  assert.deepEqual(room.memory.get('p1').get('p0'),[{index:1,rank:'K'}]);
   // The target's own reorder destroys other observers' exact positional knowledge.
   moveCard(room,'p1',0,1);
   assert.equal(room.memory.get('p2').has('p1'),false);

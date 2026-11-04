@@ -92,6 +92,8 @@ export function startGame(room, rng = randomInt) {
   room.memory = new Map();
   room.drawHistory = [];
   room.actionId = 0;
+  room.selection = null;
+  room.animationUntil = 0;
   room.players.forEach(p => { p.hand = []; p.aiShuffleCheckedTurn = null; });
   deck.forEach((card, idx) => { room.players[idx % room.players.length].hand.push(card); });
   room.players.forEach(p => {
@@ -198,14 +200,14 @@ export function shouldAiShuffle(room, actorId, rng = randomInt) {
   return rng(100) < chance;
 }
 
-// A public draw position shifts the positions of any legitimately remembered
-// neighbouring cards. When the drawn card can be identified by an observer, its
-// rank can be followed into the actor's visible append slot (unless paired).
+// Drawn faces are public. Observers can remember their append slots until a
+// shuffle/reorder or pair invalidates that player's known positions.
 function updateMemoriesAfterDraw(room, actor, target, slot, drawn, paired) {
-  const memory = room.memory || new Map();
-  for (const [observerId, targets] of memory.entries()) {
+  const memory = room.memory ||= new Map();
+  for (const player of room.players) {
+    if (!memory.has(player.id)) memory.set(player.id, new Map());
+    const targets = memory.get(player.id);
     const previous = targets.get(target.id) || [];
-    const transferred = previous.find(entry => entry.index === slot);
     const survivors = previous.filter(entry => entry.index !== slot)
       .map(entry => ({ index:entry.index > slot ? entry.index - 1 : entry.index, rank:entry.rank }));
     if (previous.length) {
@@ -215,19 +217,12 @@ function updateMemoriesAfterDraw(room, actor, target, slot, drawn, paired) {
     if (paired) {
       // A public pair removes a second card from the actor at an unknown slot.
       targets.delete(actor.id);
-    } else if (observerId !== actor.id && transferred) {
+    } else if (player.id !== actor.id) {
       const entries = targets.get(actor.id) || [];
       const index = actor.hand.length - 1;
       targets.set(actor.id, [...entries.filter(entry => entry.index !== index),
-        {index,rank:transferred.rank}]);
+        {index,rank:drawn.rank}]);
     }
-  }
-  if (target.bot && !paired) {
-    if (!memory.has(target.id)) memory.set(target.id, new Map());
-    const observer = memory.get(target.id);
-    const entries = observer.get(actor.id) || [];
-    const index = actor.hand.length - 1;
-    observer.set(actor.id,[...entries.filter(entry=>entry.index!==index),{index,rank:drawn.rank}]);
   }
 }
 
@@ -245,6 +240,7 @@ export function drawCard(room, actorId, slot) {
   if (!Number.isInteger(slot) || slot < 0 || slot >= target.hand.length) throw new RuleError('选择的牌不存在');
 
   const targetCountBefore = target.hand.length;
+  room.selection = null;
   const [drawn] = target.hand.splice(slot, 1);
   actor.hand.push(drawn);
   const matched = discardPairs(actor.hand);
@@ -261,6 +257,7 @@ export function drawCard(room, actorId, slot) {
     id: (room.actionId = (room.actionId || 0) + 1), paired: matched.length > 0,
     appendIndex: matched.length ? null : actor.hand.length - 1,
     pair: matched.length ? matched[0] : null,
+    card: { ...drawn },
     turn: room.turn,
   };
   if (finishIfNeeded(room)) return { paired: matched.length > 0, finished: true };
@@ -296,6 +293,8 @@ export function publicView(room, viewerId) {
     currentPlayerId: room.currentPlayerId || null,
     targetPlayerId: room.targetPlayerId || null,
     deadline: room.deadline || null,
+    selection: room.selection ? { ...room.selection } : null,
+    animationUntil: room.animationUntil || 0,
     pairs: room.pairs.map(p => ({ ...p })),
     escaped: [...room.escaped],
     loserId: room.phase === 'finished' ? room.loserId : null,

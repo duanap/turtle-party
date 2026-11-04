@@ -1,17 +1,17 @@
 # Turtle Party · Old Maid
 
-**Multiplayer browser card game** · **v0.3.0** · [简体中文](README.md)
+**Multiplayer browser card game** · **v0.4.0** · [简体中文](README.md)
 
 Play Old Maid with **2–6 players**, fair AI opponents, or friends in a shared room. Built with native HTML/CSS/JavaScript, Node.js, and SSE. **No Docker, database, or third-party npm dependencies.**
 
-> **Status:** A working deployment candidate, **not a production-validated release**. Real iOS/Android device testing, public-network tests, and independent security/performance reviews remain pending.
+> **Validation:** Automated tests and desktop/mobile viewport browser checks are available. Real iOS/Android devices, network switching, and independent security/performance reviews remain pending. Live site: [cwg.duanap.cn](https://cwg.duanap.cn).
 
 ## Features
 
 - **Quick play:** One human plus three AI opponents by default.
-- **Friend rooms:** Join via a six-character room code and add AI seats.
+- **Friend rooms:** Join via a six-digit room code (including leading zeros) and add AI seats.
 - **Classic rules:** Remove one card from a 52-card deck; discard matching ranks; the last player with one unmatched card loses.
-- **Interaction:** Draw selection and confirmation, card rearrangement, shuffle, PC/mobile layout, and animation.
+- **Interaction:** Synchronized selection raises the target's card. Every drawn face is revealed to the table, moves into the actor's hand, then pairs are animated away. The game interface uses Chinese text and always-visible home rules.
 - **Resilience:** SSE updates, reconnection, polling fallback, temporary autoplay, and private single-instance room snapshots.
 
 ## Run locally
@@ -40,6 +40,7 @@ The detailed documentation is organized into separate Markdown files (currently 
 | [Architecture](docs/技术架构.md) | HTTP/SSE, server, persistence, config |
 | [Deployment](docs/部署与运维.md) | Debian, systemd, Nginx, HTTPS |
 | [Testing and acceptance](docs/测试与验收.md) | Automated tests and outstanding checks |
+| [v0.4 changelog](docs/更新说明-v0.4.md) | Numeric rooms, public draw reveals, synchronized selection |
 | [v0.3 changelog](docs/更新说明-v0.3.md) | Version details and limitations |
 
 The earlier [v1.2 design document](docs/抽乌龟-游戏设计-v1.2.md) remains available for historical reference and is not the current implementation-status source.

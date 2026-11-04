@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { once } from 'node:events';
 import { randomUUID } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 
 async function unusedPort() {
   const server=net.createServer();
@@ -20,9 +21,9 @@ async function startServer(options={}) {
   const port=await unusedPort();
   const dataDir=options.dataDir||await mkdtemp(join(tmpdir(),'turtle-v03-'));
   const child=spawn(process.execPath,['server/index.js'],{
-    cwd:new URL('../',import.meta.url).pathname,
+    cwd:fileURLToPath(new URL('../',import.meta.url)),
     env:{...process.env,PORT:String(port),HOST:'127.0.0.1',NODE_ENV:'test',DATA_DIR:dataDir,
-      DISCONNECT_GRACE_MS:'300',...options.env},
+      DISCONNECT_GRACE_MS:'300',DRAW_ANIMATION_MS:'0',...options.env},
     stdio:'ignore'
   });
   const base=`http://127.0.0.1:${port}`;
@@ -62,7 +63,7 @@ test('联机 API：创建、邀请、AI 补位、身份隔离、开始、重连�
   const create=await post(base,'/api/rooms',{name:'房主甲',capacity:4});
   assert.equal(create.status,200);
   const host=create.data;
-  assert.match(host.code,/^[2-9A-Z]{6}$/);
+  assert.match(host.code,/^[0-9]{6}$/);
   assert.equal((await state(base,host.code,'wrong-token')).status,403);
   const guestResult=await post(base,'/api/join',{name:'访客乙',code:host.code});
   assert.equal(guestResult.status,200);
@@ -157,7 +158,7 @@ test('真实双客户端 API：轮流抽牌、独立手牌、公共事件与最�
     if(!action.paired) {
       const opponent=a.currentPlayerId===host.playerId?guest:host;
       const blind=(await state(base,host.code,opponent.token)).data;
-      assert.ok(!('card' in blind.lastAction));
+      assert.equal(typeof blind.lastAction.card?.id,'string');
       assert.equal(blind.lastAction?.kind==='finished'?blind.lastAction.finalDraw.pair:blind.lastAction.pair,null);
     }
     if(after.phase==='finished') {
@@ -331,4 +332,42 @@ test('v0.3：主动离开立即撤销旧凭证，并由剩余真人继任房主'
   assert.equal(other.players.find(p=>p.id===host.playerId).autoplay,true);
   assert.ok(!('hand' in other.players.find(p=>p.id===host.playerId)));
   await stream.body.cancel().catch(()=>{});
+});
+
+test('六位数字房间号、跨玩家选牌预览与展示期间操作保护',async t=>{
+  const {base,child,dataDir}=await startServer({env:{DRAW_ANIMATION_MS:'2000'}});
+  t.after(async()=>{await stopServer(child);await rm(dataDir,{recursive:true,force:true});});
+  const host=(await post(base,'/api/rooms',{name:'选牌者',capacity:3})).data;
+  assert.match(host.code,/^[0-9]{6}$/);
+  const guest=(await post(base,'/api/join',{name:'被抽者',code:host.code})).data;
+  const observer=(await post(base,'/api/join',{name:'旁观者',code:host.code})).data;
+  await action(base,host,'start');
+  const initial=(await state(base,host.code,host.token)).data;
+  if(initial.phase==='finished')return;
+  const sessions=[host,guest,observer];
+  const actor=sessions.find(s=>s.playerId===initial.currentPlayerId);
+  const target=sessions.find(s=>s.playerId===initial.targetPlayerId);
+  assert.equal((await action(base,target,'select',{slot:0,turn:initial.turn})).status,400);
+  assert.equal((await action(base,actor,'select',{slot:999,turn:initial.turn})).status,400);
+  assert.equal((await action(base,actor,'select',{slot:0,turn:initial.turn-1})).status,409);
+  assert.equal((await action(base,actor,'select',{slot:0,turn:initial.turn})).status,200);
+  const preview=(await state(base,host.code,target.token)).data;
+  assert.deepEqual(preview.selection,{actorId:actor.playerId,targetId:target.playerId,slot:0,turn:initial.turn});
+  assert.ok(!('card' in preview.selection));
+  assert.equal(preview.deadline,initial.deadline);
+  const drawn=preview.myHand[0];
+  assert.equal((await action(base,actor,'select',{slot:null,turn:initial.turn})).status,200);
+  assert.equal((await state(base,host.code,target.token)).data.selection,null);
+  assert.equal((await action(base,actor,'draw',{slot:0,turn:initial.turn})).status,200);
+  for(const s of sessions){
+    const v=(await state(base,host.code,s.token)).data;
+    const draw=v.lastAction.kind==='finished'?v.lastAction.finalDraw:v.lastAction;
+    assert.deepEqual(draw.card,drawn);
+    assert.equal(v.selection,null);
+    assert.equal(draw.animationMs,2000);
+    if(v.phase==='playing'){
+      const next=sessions.find(s=>s.playerId===v.currentPlayerId);
+      assert.equal((await action(base,next,'select',{slot:0,turn:v.turn})).status,409);
+    }
+  }
 });

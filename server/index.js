@@ -17,7 +17,7 @@ const TURN_MS=Math.max(200,Number(process.env.TURN_MS || 30000));
 const DISCONNECT_GRACE_MS=Math.max(100,Number(process.env.DISCONNECT_GRACE_MS || 5000));
 const ROOM_LIMIT=Number(process.env.MAX_ROOMS || 300);
 const STREAM_LIMIT=Number(process.env.MAX_STREAMS || 300);
-const ROOM_ALPHABET='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+const DRAW_ANIMATION_MS=Math.max(0,Number(process.env.DRAW_ANIMATION_MS ?? 2400));
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8',
   '.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.ico':'image/x-icon'};
 const securityHeaders={
@@ -72,7 +72,7 @@ function bearer(req) {
 }
 function newCode(){
   for(let j=0;j<100;j++) {
-    let candidate='';for(let i=0;i<6;i++)candidate+=ROOM_ALPHABET[randomInt(ROOM_ALPHABET.length)];
+    const candidate=String(randomInt(1000000)).padStart(6,'0');
     if(!rooms.has(candidate))return candidate;
   }
   fail('房间暂时无法创建',503);
@@ -110,7 +110,7 @@ function createBot(room) {
   if(room.players.length>=room.capacity)fail('房间人数已满');
   const options=['阿龟','小圆','机灵鬼','桃桃','方块君','纸牌侠'];
   const used=new Set(room.players.map(p=>p.name));
-  room.players.push(newPlayer(options.find(name=>!used.has(name)) || `AI ${room.players.length}`,true).player);
+  room.players.push(newPlayer(options.find(name=>!used.has(name)) || `电脑 ${room.players.length}`,true).player);
 }
 function wireView(room,player){return publicView(room,player.id);}
 function sseMessage(room,player){
@@ -135,9 +135,13 @@ function clearTimers(room){
   room.turnTimer=null;room.aiTimer=null;
   if(room.resumeTimer){clearTimeout(room.resumeTimer);room.resumeTimer=null;}
 }
-function setDeadline(room){if(room.phase==='playing')room.deadline=Date.now()+TURN_MS;}
+function setDeadline(room){if(room.phase==='playing')room.deadline=Math.max(Date.now(),room.animationUntil||0)+TURN_MS;}
 function performDraw(room,actorId,slot) {
   drawCard(room,actorId,slot);
+  room.animationUntil=Date.now()+DRAW_ANIMATION_MS;
+  const action=room.lastAction.kind==='finished'?room.lastAction.finalDraw:room.lastAction;
+  action.animationMs=DRAW_ANIMATION_MS;
+  action.animationUntil=room.animationUntil;
   setDeadline(room);
   broadcast(room);
   scheduleTurn(room);
@@ -156,7 +160,7 @@ function scheduleTurn(room) {
   },remaining);
   room.turnTimer.unref();
   if(actor.bot||actor.autoplay) {
-    const delay=Math.min(remaining,550+randomInt(650));
+    const delay=Math.min(remaining,Math.max(0,(room.animationUntil||0)-Date.now())+550+randomInt(650));
     room.aiTimer=setTimeout(()=>{
       if(room.phase!=='playing'||room.currentPlayerId!==actor.id||room.turn!==currentTurn)return;
       if(actor.bot&&actor.aiShuffleCheckedTurn!==currentTurn) {
@@ -267,7 +271,7 @@ function checkRequestId(data) {
     fail('缺少有效操作编号');
 }
 async function api(req,res,url) {
-  if(req.method==='GET'&&url.pathname==='/api/health')return json(res,200,{ok:!store.lastError,version:'0.3.0'});
+  if(req.method==='GET'&&url.pathname==='/api/health')return json(res,200,{ok:!store.lastError,version:'0.4.0'});
   if(req.method==='POST'&&url.pathname==='/api/quick') {
     throttle(req,'create');const data=await body(req);
     const {room,player,credential}=newRoom(data.name,4);
@@ -311,7 +315,19 @@ async function api(req,res,url) {
     return json(res,200,{ok:true,duplicate:true,revision:room.revision});
   }
   if(!limiter.check(`action-player:${human.id}`,90))fail('操作过于频繁，请稍后再试',429);
+  if(Date.now()<(room.animationUntil||0)&&['select','draw','shuffle','move','rematch'].includes(data.type))
+    fail('抽牌正在展示，请稍等片刻',409);
   switch(data.type) {
+    case 'select':{
+      if(room.phase!=='playing')fail('对局未进行中');
+      if(room.currentPlayerId!==human.id)fail('尚未轮到该玩家');
+      if(data.turn!==room.turn)fail('当前回合已变化，请重新选择',409);
+      const target=room.players.find(p=>p.id===room.targetPlayerId);
+      if(data.slot!==null&&(!Number.isInteger(data.slot)||data.slot<0||data.slot>=target.hand.length))
+        fail('选择的牌不存在');
+      room.selection=data.slot===null?null:{actorId:human.id,targetId:target.id,slot:data.slot,turn:room.turn};
+      break;
+    }
     case 'add_bot':onlyOwner(room,human.id);createBot(room);break;
     case 'remove_bot':{
       onlyOwner(room,human.id);
@@ -334,6 +350,7 @@ async function api(req,res,url) {
       performDraw(room,human.id,data.slot);break;
     }
     case 'leave':{
+      if([room.selection?.actorId,room.selection?.targetId].includes(human.id))room.selection=null;
       closePlayerStreams(room,human);
       if(room.phase==='lobby') leaveLobby(room,human);
       else {
@@ -434,5 +451,5 @@ try {
     }
   }
   if(rooms.size)store.mark(rooms);
-  server.listen(PORT,HOST,()=>console.log(`抽乌龟 v0.3 已启动：http://${HOST}:${PORT}，恢复房间 ${rooms.size} 个`));
+  server.listen(PORT,HOST,()=>console.log(`抽乌龟 0.4版已启动：http://${HOST}:${PORT}，恢复房间 ${rooms.size} 个`));
 }catch(err){console.error('无法读取房间快照，服务拒绝启动以免丢失对局:',err.message);process.exitCode=1;}

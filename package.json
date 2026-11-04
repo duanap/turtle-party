@@ -1,6 +1,6 @@
 {
   "name": "turtle-party",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "Turtle Party: lightweight multiplayer Old Maid card game with fair AI, reconnect and no database",
