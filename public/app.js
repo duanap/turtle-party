@@ -9,7 +9,7 @@ const state = {
   busy:false, toastTimeout:null, dragged:null, touchDrag:null,
   effectActive:null, queuedSnapshot:null, waitingUntil:0, lastEffectKey:null,
   dialog:null, dialogKey:null, sceneMode:null,
-  preferences:{sound:localStorage.getItem('turtle-sound')==='on',reduceMotion:localStorage.getItem('turtle-reduce-motion')==='on'}
+  preferences:{sound:localStorage.getItem('turtle-sound')!=='off',reduceMotion:localStorage.getItem('turtle-reduce-motion')==='on'}
 };
 const h = (str='') => String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const getName = () => localStorage.getItem('turtle-name') || '玩家';
@@ -347,7 +347,7 @@ function tableSeats(v,lobby=false) {
   const mine=v.players.findIndex(p=>p.id===v.myId);
   return `<div class="seat-ring" data-capacity="${v.capacity}">${positions[v.capacity].map(([x,y],i)=>{
     const player=v.players[(mine+i+1)%v.capacity];
-    return player?seat(player,v,lobby,`--seat-x:${x}%;--seat-y:${y}%`):`<div class="seat empty-seat" style="--seat-x:${x}%;--seat-y:${y}%"><span>空位</span></div>`;
+    return player?seat(player,v,lobby,`--seat-x:${x}%;--seat-y:${y}%`):'<span class="seat-slot" hidden aria-hidden="true"></span>';
   }).join('')}</div>`;
 }
 function roomView(v) {
@@ -424,11 +424,19 @@ function finishView(v) {
 const pause = ms => new Promise(resolve=>setTimeout(resolve,ms));
 const reducedMotion = () => state.preferences.reduceMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 let audioContext=null;
+function unlockAudio() {
+  if(!state.preferences.sound)return null;
+  const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return null;
+  try {
+    audioContext ||= new Audio();
+    void audioContext.resume().catch(()=>{});
+    return audioContext;
+  }catch{return null;}
+}
 function playTone(kind) {
   if(!state.preferences.sound||document.hidden)return;
-  const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+  if(!unlockAudio()||audioContext.state!=='running')return;
   try {
-    audioContext ||= new Audio();void audioContext.resume();
     const frequencies=kind==='pair'?[660,880]:kind==='reveal'?[520]:[340];
     frequencies.forEach((frequency,index)=>{
       const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();
@@ -438,7 +446,7 @@ function playTone(kind) {
       gain.gain.exponentialRampToValueAtTime(.001,time+.12);
       oscillator.connect(gain);gain.connect(audioContext.destination);oscillator.start(time);oscillator.stop(time+.13);
     });
-  }catch{state.preferences.sound=false;}
+  }catch{}
 }
 async function animateBox(el,frames,duration) {
   const reduce=reducedMotion();
@@ -660,6 +668,7 @@ async function handleUi(type) {
 }
 app.addEventListener('click',async event=> {
   const button=event.target.closest('[data-ui],[data-api],[data-slot]');if(!button||state.busy) return;
+  unlockAudio();
   if(button.dataset.ui) {await handleUi(button.dataset.ui);return;}
   if(button.hasAttribute('data-slot')) {
     if(!myTurn()) return;
@@ -685,6 +694,7 @@ app.addEventListener('click',async event=> {
 app.addEventListener('submit',async event=> {
   const form=event.target.closest('form[data-form]');if(!form) return;
   event.preventDefault();if(state.busy)return;
+  unlockAudio();
   const data=Object.fromEntries(new FormData(form));localStorage.setItem('turtle-name',data.name);
   const type=form.dataset.form;
   const error=form.querySelector('.form-error');

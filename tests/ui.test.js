@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 
 const source=readFileSync(new URL('../public/app.js',import.meta.url),'utf8');
-function ui() {
+function ui(stored={}) {
   let frame='';
   const content={innerHTML:''},dialog={innerHTML:'',querySelector:()=>null};
   const shell={dataset:{},classList:{toggle:()=>{}}};
@@ -13,7 +13,7 @@ function ui() {
     querySelectorAll:()=>[],addEventListener:()=>{}};
   const toast={textContent:'',classList:{add:()=>{},remove:()=>{}}};
   const document={querySelector:k=>k==='#app'?app:toast,querySelectorAll:()=>[],addEventListener:()=>{}};
-  const storage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
+  const storage={getItem:key=>stored[key]??null,setItem:(key,value)=>{stored[key]=value;},removeItem:key=>{delete stored[key];}};
   const context=vm.createContext({document,localStorage:storage,setInterval:()=>{},
     setTimeout:()=>0,clearTimeout:()=>{},console,URL,encodeURIComponent});
   vm.runInContext(source,context,{filename:'app.js'});
@@ -85,4 +85,32 @@ test('牌面保留标准 A、J、Q、K，不把点数翻译成中文字符',()=>
   context.fixture=v;vm.runInContext('state.view=fixture;render();',context);
   const labels=[...app.innerHTML.matchAll(/class="value">([^<]+)</g)].map(match=>match[1]);
   assert.deepEqual(labels,['A','J','Q','K']);
+});
+
+test('音效默认开启，保留关闭选择且不堆积尚未激活的声音',()=>{
+  for(const [stored,expected] of [[{},true],[{'turtle-sound':'off'},false],[{'turtle-sound':'on'},true]]){
+    const {context}=ui(stored);
+    assert.equal(vm.runInContext('state.preferences.sound',context),expected);
+  }
+  const {context}=ui();let tones=0;
+  context.window={AudioContext:class {
+    state='suspended';
+    resume(){return Promise.resolve();}
+    createOscillator(){tones++;return {};}
+  }};
+  vm.runInContext("playTone('pair');playTone('pair');playTone('reveal');",context);
+  assert.equal(tones,0);
+});
+
+test('等待房间只显示已入座玩家，空位不绘制位置框',()=>{
+  const {app,context}=ui();const v=baseView();
+  v.phase='lobby';v.capacity=6;v.players=[v.players[0]];
+  context.fixture=v;vm.runInContext('state.view=fixture;render();',context);
+  assert.equal((app.innerHTML.match(/data-player-seat=/g)||[]).length,1);
+  assert.equal((app.innerHTML.match(/class="seat-slot" hidden/g)||[]).length,5);
+  assert.doesNotMatch(app.innerHTML,/空位/);
+  v.players.push({id:'p1',name:'新玩家',count:0,bot:false});
+  vm.runInContext('render();',context);
+  assert.equal((app.innerHTML.match(/data-player-seat=/g)||[]).length,2);
+  assert.equal((app.innerHTML.match(/class="seat-slot" hidden/g)||[]).length,4);
 });

@@ -48,6 +48,6 @@ The earlier [v1.2 design document](docs/抽乌龟-游戏设计-v1.2.md) remains 
 
 ## Development and limitations
 
-Run `npm test` (33 tests) before submitting a pull request. CI checks Node.js 20 and 22. Optional `npm run test:browser` checks use a separately available Playwright installation, without adding a game runtime dependency; see the testing guide. Persistent room data is stored in a private JSON file and is safe for **one Node.js process only**. Do not commit `data/`. Browser sessions use `localStorage`; deploy behind HTTPS.
+Run `npm test` (35 tests) before submitting a pull request. CI checks Node.js 20 and 22. Optional `npm run test:browser` checks use a separately available Playwright installation, without adding a game runtime dependency; see the testing guide. Persistent room data is stored in a private JSON file and is safe for **one Node.js process only**. Do not commit `data/`. Browser sessions use `localStorage`; deploy behind HTTPS.
 
 **License:** No open-source license is currently granted. A public GitHub repository does not automatically authorize reuse or redistribution.

@@ -227,7 +227,7 @@
   .stat-chip{ font-size:8px; padding:4px 8px }
   .stat-chip strong{ font-size:10px }
   .lobby-hint{ font-size:9px }
-  .draw-area{ left:45%; top:45%; width:65%; min-height:0 }
+  .draw-area{ left:50%; top:45%; width:65%; min-height:0 }
   .round-kicker{ display:none }
   .round-title{ font-size:13px; line-height:1.35; margin-bottom:3px; max-width:94%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
   .round-subtitle{ display:none }
@@ -474,7 +474,7 @@
  .own-dock{height:25%;max-height:208px;grid-template-columns:1fr auto;grid-template-rows:52px minmax(0,1fr);gap:0 8px}
  .shuffle-button{--control-h:42px;--control-font:15px;min-width:102px;width:102px;grid-row:1;grid-column:2;align-self:center;margin:0 3px 0 0}
  .dock-title{font-size:12px}.dock-sub{font-size:11px}
- .empty-seat{padding-left:28%}.empty-seat>span{font-size:11px}
+
  .remove-bot{width:26px;height:26px;right:-2px;top:-10px}
  .waiting-center{top:31%;width:88%;gap:12px}.hanging-sign{width:280px;height:58px;font-size:22px}.waiting-note{font-size:12px;margin-top:7px}
  .waiting-center .deck-stack{width:46px;height:58px}
@@ -495,7 +495,7 @@
  .seat-fan{top:-17px}.seat-fan i{width:24px;height:34px;margin-left:-17px}
  .own-seat{--seat-w:130px;margin-bottom:4px}.own-dock{grid-template-columns:130px minmax(0,1fr) 92px;gap:8px}
  .shuffle-button{--control-h:40px;--control-font:14px;min-width:92px;width:92px;margin-bottom:12px}
- .remove-bot{width:26px;height:26px;right:-2px;top:-10px}.empty-seat>span{font-size:11px}
+ .remove-bot{width:26px;height:26px;right:-2px;top:-10px}
  .waiting-center{top:32%;width:66%;gap:10px}.hanging-sign{width:246px;height:36px;font-size:17px;padding-bottom:2px}.waiting-note{display:none}.waiting-center .deck-stack{display:none}
  .room-actions .btn{--control-h:40px;--control-font:13px;min-width:126px}
  .start-button{--control-h:46px;--control-font:18px;width:210px}

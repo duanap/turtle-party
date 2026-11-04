@@ -119,7 +119,7 @@ h1,h2,h3,p{ margin-top:0 }
 .lobby-dock{ height:125px; max-height:125px; display:flex; align-items:end }
 .own-welcome{ margin:0 0 27px 18px; font-size:12px; color:#e4d9ae; letter-spacing:.08em }
 .empty-hand{ padding:38px 20px; font-size:15px; font-weight:800; color:#f6ddb0; text-shadow:0 2px 2px #153b29 }
-.draw-area{ position:absolute; left:45%; top:40%; transform:translateX(-50%); width:min(68%,890px); min-height:220px; display:flex; flex-direction:column; align-items:center; z-index:6 }
+.draw-area{ position:absolute; left:50%; top:40%; transform:translateX(-50%); width:min(68%,890px); min-height:220px; display:flex; flex-direction:column; align-items:center; z-index:6 }
 .round-kicker{ font-size:11px; letter-spacing:.15em; margin-bottom:6px; color:#f4daa2; text-align:center }
 .round-title{ font-size:25px; line-height:1.4; font-weight:900; color:#ffedc2; text-shadow:0 3px 3px #24472f; text-align:center; margin-bottom:4px }
 .round-subtitle{ font-size:11px; color:#d8dfc5; text-align:center; margin-bottom:10px }
@@ -299,12 +299,12 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 
 
 .pair-effect:before{ content:""; position:absolute; inset:-40px -75px -30px; z-index:-1; opacity:.7; background:url('/assets/effects/gold_sparkles.png') center/contain no-repeat }
-.network-banner{ border:0; background:url('/assets/buttons/button_cream_blank_filled.png') center/100% 100% no-repeat; box-shadow:none; border-radius:0; padding:10px 25px }
+.network-banner{ border:0; background:url('/assets/buttons/button_cream_clean.png') center/100% 100% no-repeat; box-shadow:none; border-radius:0; padding:10px 25px }
 
 /* PNG controls: text sits inside the painted area, not the transparent canvas. */
-.btn{--control-h:52px;--control-font:16px;position:relative;display:inline-block;flex:none;height:var(--control-h);min-height:var(--control-h);min-width:142px;padding:0;border:0;border-radius:0;background:url('/assets/buttons/button_cream_blank_filled.png') center/100% 100% no-repeat;color:#582c10;font-size:var(--control-font);font-weight:800;line-height:1.15;white-space:nowrap;box-shadow:none;transition:transform .15s,filter .15s}
+.btn{--control-h:52px;--control-font:16px;position:relative;display:inline-block;flex:none;height:var(--control-h);min-height:var(--control-h);min-width:142px;padding:0;border:0;border-radius:0;background:url('/assets/buttons/button_cream_clean.png') center/100% 100% no-repeat;color:#582c10;font-size:var(--control-font);font-weight:800;line-height:1.15;white-space:nowrap;box-shadow:none;transition:transform .15s,filter .15s}
 .button-content{position:absolute;inset:14% 6% 20%;display:flex;align-items:center;justify-content:center;gap:8px;line-height:1.15}
-.btn-primary{background-image:url('/assets/buttons/button_gold_blank_filled.png')}
+.btn-primary{background-image:url('/assets/buttons/button_gold_clean.png')}
 .btn .icon{width:22px;height:22px}
 .btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.04)}
 .btn:active:not(:disabled){transform:translateY(1px)}
@@ -331,7 +331,7 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 .panel-body{min-width:0;max-height:calc(100svh - 44px - var(--art-top) - var(--art-bottom));overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#b48b55 transparent}
 .modal-layer{position:fixed;inset:0;display:grid;place-items:center;padding:16px;z-index:80}
 .modal-panel{width:min(480px,calc(100vw - 32px));max-height:calc(100svh - 32px)}
-.modal-close{position:absolute;right:6%;top:28%;width:28px;height:28px;padding:5px;pointer-events:auto;background:url('/assets/buttons/button_cream_blank_filled.png') center/100% 100% no-repeat}
+.modal-close{position:absolute;right:6%;top:28%;width:28px;height:28px;padding:5px;pointer-events:auto;background:url('/assets/buttons/button_cream_clean.png') center/100% 100% no-repeat}
 .modal-close .icon{width:18px;height:18px;color:#643919}
 .modal-intro{margin:0 0 16px;padding:0;color:#86613e;font-size:14px;line-height:1.65;text-align:center}
 .field{display:grid;grid-template-columns:84px minmax(0,1fr);align-items:center;gap:12px;margin:16px 0;text-align:left}
@@ -369,7 +369,7 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 .connection-tag[data-status="offline"]:before{color:#e9795a}
 
 /* The player PNG has a circular portrait at left and a fixed text-safe rectangle at right. */
-.seat{--seat-w:200px;position:absolute;left:var(--seat-x,50%);top:var(--seat-y,25%);transform:translate(-50%,-50%);width:var(--seat-w);height:calc(var(--seat-w) * .31034483);min-height:0;display:block;pointer-events:auto;background:url('/assets/players/player_card_blank_default.png') center/100% 100% no-repeat}
+.seat{--seat-w:200px;flex:0 0 auto;aspect-ratio:580/180;padding:0;position:absolute;left:var(--seat-x,50%);top:var(--seat-y,25%);transform:translate(-50%,-50%);width:var(--seat-w);height:calc(var(--seat-w) * .31034483);min-height:0;display:block;pointer-events:auto;background:url('/assets/players/player_card_blank_default.png') center/100% 100% no-repeat}
 .seat.active{background-image:url('/assets/players/player_card_blank_active.png')}
 .seat.target{background-image:url('/assets/players/player_card_blank_target.png')}
 .seat.out{background-image:url('/assets/players/player_card_blank_escaped.png');opacity:.85}
@@ -383,12 +383,12 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 .seat-fan{position:absolute;left:75%;top:-27px;display:flex;transform:rotate(15deg);z-index:1}
 .seat-fan i{display:block;flex:none;width:33px;height:47px;margin-left:-23px;background:url('/assets/cards/back_red_single.png') center/100% 100% no-repeat;transform:rotate(-12deg)}
 .seat-fan i:nth-child(2){transform:rotate(0deg)}.seat-fan i:nth-child(3){transform:rotate(12deg)}
-.empty-seat{display:flex;align-items:center;justify-content:center;padding-left:28%;opacity:.75}
-.empty-seat>span{color:#f2dfb7;font-size:13px;font-weight:700}
+
+
 .own-seat{--seat-w:190px;position:relative;left:auto;top:auto;transform:none;margin-bottom:12px}
 .own-seat .seat-fan{display:none}
 .own-dock{grid-template-columns:190px minmax(0,1fr) 116px}
-.remove-bot{position:absolute;right:-3px;top:-9px;display:grid;place-items:center;width:30px;height:30px;border:0;padding:4px;background:url('/assets/buttons/button_cream_blank_filled.png') center/100% 100% no-repeat;color:#733e25;z-index:4}
+.remove-bot{position:absolute;right:-3px;top:-9px;display:grid;place-items:center;width:30px;height:30px;border:0;padding:4px;background:url('/assets/buttons/button_cream_clean.png') center/100% 100% no-repeat;color:#733e25;z-index:4}
 .remove-bot .icon{width:16px;height:16px}
 .remove-bot:after{content:"";position:absolute;inset:-7px}
 .dock-title{font-size:13px}.dock-sub{font-size:12px}

@@ -10,6 +10,10 @@ async function snapshot(page){return page.evaluate
 (async()=>{const s=JSON.parse(localStorage.getItem('turtle-session'));return fetch(`/api/rooms/${s.code}/state`,{headers:{Authorization:`Bearer ${s.token}`}}).then(r=>r.json())});}
 async function screen(page,name){const file=path.join(output,name+'.png');await page.screenshot({path:file});screenshots.push(file);}
 async function noOverflow(page){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'horizontal overflow');}
+async function seatAspect(page){
+ const ratios=await page.locator('.seat').evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return r.width/r.height}));
+ assert.ok(ratios.every(ratio=>Math.abs(ratio-580/180)<.025),'player frame stretched');
+}
 async function rowLayout(page){for(const field of await page.locator('.field').all()){const label=await field.locator('span').boundingBox(),input=await field.locator('input,select').boundingBox();assert.ok(Math.abs(label.y+label.height/2-input.y-input.height/2)<3,'field wrapped');}await noOverflow(page);}
 async function chineseInterface(page){return page.evaluate(()=>{
  const copy=document.body.cloneNode(true);
@@ -61,7 +65,9 @@ async function modalAndLayoutChecks(browser){
  await p.setViewportSize({width:1440,height:900});
  await p.locator('[data-ui="settings"]').click();
  await artworkAlignment(p);
- assert.equal(await p.locator('[name="sound"]').isChecked(),false);
+ assert.equal(await p.locator('[name="sound"]').isChecked(),true);
+ await p.locator('[name="sound"]').uncheck();
+ assert.equal(await p.evaluate(()=>localStorage.getItem('turtle-sound')),'off');
  await p.locator('[name="sound"]').check();
  assert.equal(await p.evaluate(()=>localStorage.getItem('turtle-sound')),'on');
  await p.locator('[name="sound"]').uncheck();
@@ -72,6 +78,7 @@ async function modalAndLayoutChecks(browser){
  assert.equal(await controls.first().evaluate(el=>el===document.activeElement),true);
  await p.keyboard.press('Escape');await p.reload();
  await p.locator('[data-ui="settings"]').click();
+ assert.equal(await p.locator('[name="sound"]').isChecked(),false);
  assert.equal(await p.locator('[name="reduceMotion"]').isChecked(),true);
  await p.locator('[name="reduceMotion"]').uncheck();
  await p.keyboard.press('Escape');
@@ -82,7 +89,11 @@ async function modalAndLayoutChecks(browser){
   await p.locator('[name="name"]').fill('布局校验');
   await p.locator('[name="capacity"]').selectOption(String(capacity));
   await p.locator('button[type="submit"]').click();await p.waitForSelector('.lobby-page');await wait(200);
-  assert.equal(await p.locator('.seat').count(),capacity);
+  assert.equal(await p.locator('.seat').count(),1);
+  assert.equal(await p.locator('.seat-slot:visible').count(),0);
+  assert.equal(await p.locator('[data-api="start"]').isDisabled(),true);
+  await seatAspect(p);
+  if(capacity===6)await screen(p,'lobby-owner-only');
   await p.locator('[data-ui="rules"]').click();await artworkAlignment(p);await p.keyboard.press('Escape');
   await p.locator('[data-ui="leave"]').click();await artworkAlignment(p);await p.keyboard.press('Escape');
   assert.equal(await p.locator('.lobby-page').count(),1);
@@ -100,6 +111,10 @@ async function modalAndLayoutChecks(browser){
     const sizes=await p.locator('.target-list .card').evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return{w:r.width,h:r.height}}));
     assert.ok(sizes.every(r=>r.w>=44&&r.h>=44),'card touch target too small');
     const targets=await p.locator('.target-list').boundingBox(),hand=await p.locator('.own-dock').boundingBox();
+    const draw=await p.locator('.draw-area').boundingBox(),table=await p.locator('.table').boundingBox();
+    assert.ok(Math.abs(draw.x+draw.width/2-table.x-table.width/2)<1,'draw area is not centered');
+    assert.ok(Math.abs(targets.x+targets.width/2-table.x-table.width/2)<1,'target cards are not centered');
+    await seatAspect(p);
     assert.ok(targets.y+targets.height<=hand.y,'target overlaps own hand');
     if(viewport.width===1440||viewport.width===390||viewport.width===740)await screen(p,'immersive-game-'+viewport.width+'x'+viewport.height);
    }
@@ -108,12 +123,13 @@ async function modalAndLayoutChecks(browser){
   await p.locator('[data-ui="confirm-leave"]').click();await p.waitForSelector('.home-page');
  }
  checks.push('二至六人座位、同场景洗牌发牌、开局座位稳定、三种小横屏牌面不小于四十四像素');
+ checks.push('空位隐藏、玩家框等比显示、抽牌区域水平居中、音效默认开启且记住关闭偏好');
  checks.push('快速开始、创建、加入、设置、玩法及退出弹窗标题和按钮均位于 PNG 的实际安全区域');
  await c.close();
 }
 
 (async()=>{
- const browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL||undefined,headless:true});
+ const browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL||undefined,headless:true,args:['--mute-audio']});
  const contexts=[];const pages=[];
  try{
   await modalAndLayoutChecks(browser);
@@ -134,6 +150,7 @@ async function modalAndLayoutChecks(browser){
    assert.equal(await page.locator('[name="code"]').getAttribute('inputmode'),'numeric');
    if(i===1)await screen(page,'immersive-join-phone');
    await page.locator('[name="name"]').fill(i===1?'玩家乙':'玩家丙');await page.locator('[name="code"]').fill(code);await page.locator('button[type="submit"]').click();await page.waitForSelector('.lobby-page');
+   await host.waitForFunction(n=>document.querySelectorAll('.seat').length===n,i+1);
   }
   checks.push('手机竖屏及横屏：昵称/房间号标签与输入框同一行');
   await host.locator('[data-api="start"]').click();for(const p of pages)await p.waitForSelector('.table');
