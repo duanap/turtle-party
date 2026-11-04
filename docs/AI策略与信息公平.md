@@ -58,3 +58,7 @@ v0.3 已实现**概率型主动洗序**：AI 在其手牌未被锁定、且至�
 **实现文件：** `server/engine.js` 中 `aiObservation`、`evaluateObservation`、`chooseSlotFromObservation`、`shouldAiShuffle`、`updateMemoriesAfterDraw`。
 
 **相关测试：** `tests/engine.test.js`。联机身份信息隔离见[《大厅与房间》](大厅与房间.md)。
+
+## 沉浸界面的公平边界
+
+头像、插画牌背和发牌动画只用于显示，不进入电脑决策输入。电脑等待有上限的开局或抽牌窗口后继续行动，不等待客户端回执。公开牌位记忆、失效清除、未知位置随机选择及主动洗序策略不变。

@@ -5,9 +5,14 @@ import {readFileSync} from 'node:fs';
 
 const source=readFileSync(new URL('../public/app.js',import.meta.url),'utf8');
 function ui() {
-  const app={innerHTML:'',querySelector:()=>null,addEventListener:()=>{}};
+  let frame='';
+  const content={innerHTML:''},dialog={innerHTML:'',querySelector:()=>null};
+  const shell={dataset:{},classList:{toggle:()=>{}}};
+  const app={get innerHTML(){return frame+content.innerHTML+dialog.innerHTML;},set innerHTML(value){frame=value;},
+    querySelector:selector=>frame?({'.scene-shell':shell,'.scene-content':content,'.dialog-host':dialog}[selector]||null):null,
+    querySelectorAll:()=>[],addEventListener:()=>{}};
   const toast={textContent:'',classList:{add:()=>{},remove:()=>{}}};
-  const document={querySelector:k=>k==='#app'?app:toast,querySelectorAll:()=>[]};
+  const document={querySelector:k=>k==='#app'?app:toast,querySelectorAll:()=>[],addEventListener:()=>{}};
   const storage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
   const context=vm.createContext({document,localStorage:storage,setInterval:()=>{},
     setTimeout:()=>0,clearTimeout:()=>{},console,URL,encodeURIComponent});

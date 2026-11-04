@@ -8,6 +8,7 @@ import {
 } from './engine.js';
 import { SnapshotStore } from './store.js';
 import { SlidingLimiter } from './rate-limit.js';
+import { createRoomCode } from './room-code.js';
 
 const ROOT=resolve(fileURLToPath(new URL('../public/',import.meta.url)));
 const PORT=Number(process.env.PORT || 3000);
@@ -18,8 +19,10 @@ const DISCONNECT_GRACE_MS=Math.max(100,Number(process.env.DISCONNECT_GRACE_MS ||
 const ROOM_LIMIT=Number(process.env.MAX_ROOMS || 300);
 const STREAM_LIMIT=Number(process.env.MAX_STREAMS || 300);
 const DRAW_ANIMATION_MS=Math.max(0,Number(process.env.DRAW_ANIMATION_MS ?? 2400));
+const DEAL_ANIMATION_MS=Math.max(0,Number(process.env.DEAL_ANIMATION_MS ?? 1200));
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8',
-  '.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.ico':'image/x-icon'};
+  '.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.ico':'image/x-icon',
+  '.png':'image/png','.jpg':'image/jpeg'};
 const securityHeaders={
   'X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY',
   'Referrer-Policy':'no-referrer','Cross-Origin-Resource-Policy':'same-origin',
@@ -71,11 +74,7 @@ function bearer(req) {
   return match?.[1] || null;
 }
 function newCode(){
-  for(let j=0;j<100;j++) {
-    const candidate=String(randomInt(1000000)).padStart(6,'0');
-    if(!rooms.has(candidate))return candidate;
-  }
-  fail('房间暂时无法创建',503);
+  return createRoomCode(rooms);
 }
 function newPlayer(name,bot=false) {
   const credential=bot?null:freshToken();
@@ -106,7 +105,7 @@ function auth(room,received) {
 }
 function onlyOwner(room,id){if(room.ownerId!==id)fail('只有房主可以操作',403);}
 function createBot(room) {
-  if(room.phase!=='lobby')fail('只能在等待房间中调整 AI');
+  if(room.phase!=='lobby')fail('只能在等待房间中调整电脑玩家');
   if(room.players.length>=room.capacity)fail('房间人数已满');
   const options=['阿龟','小圆','机灵鬼','桃桃','方块君','纸牌侠'];
   const used=new Set(room.players.map(p=>p.name));
@@ -136,6 +135,13 @@ function clearTimers(room){
   if(room.resumeTimer){clearTimeout(room.resumeTimer);room.resumeTimer=null;}
 }
 function setDeadline(room){if(room.phase==='playing')room.deadline=Math.max(Date.now(),room.animationUntil||0)+TURN_MS;}
+function startRound(room) {
+  startGame(room);
+  room.animationUntil=Date.now()+DEAL_ANIMATION_MS;
+  room.lastAction.deal.duration=DEAL_ANIMATION_MS;
+  room.lastAction.deal.until=room.animationUntil;
+  setDeadline(room);scheduleTurn(room);
+}
 function performDraw(room,actorId,slot) {
   drawCard(room,actorId,slot);
   room.animationUntil=Date.now()+DRAW_ANIMATION_MS;
@@ -227,6 +233,9 @@ function connectEvents(req,res,room,player) {
   res.on('close',()=>{
     clearInterval(heartbeat);room.clients.delete(client);
     if(!rooms.has(room.code) || !room.players.includes(player) || !player.tokenHash)return;
+    if(room.selection?.actorId===player.id && ![...room.clients].some(c=>c.player.id===player.id)) {
+      room.selection=null;broadcast(room);
+    }
     if(room.disconnectTimers.has(player.id))clearTimeout(room.disconnectTimers.get(player.id));
     const timer=setTimeout(()=>{
       room.disconnectTimers.delete(player.id);
@@ -276,7 +285,7 @@ async function api(req,res,url) {
     throttle(req,'create');const data=await body(req);
     const {room,player,credential}=newRoom(data.name,4);
     while(room.players.length<4)createBot(room);
-    startGame(room);setDeadline(room);scheduleTurn(room);broadcast(room);
+    startRound(room);broadcast(room);
     await store.flush();
     return json(res,200,session(room,player,credential));
   }
@@ -288,6 +297,8 @@ async function api(req,res,url) {
   }
   if(req.method==='POST'&&url.pathname==='/api/join') {
     throttle(req,'join');const data=await body(req);
+    if(typeof data.code!=='string'||!/^\d{6}$/.test(data.code.trim()))fail('请输入六位数字房间号');
+    data.code=data.code.trim();
     const room=getRoom(data.code);
     if(room.phase!=='lobby')fail('游戏已开始，只允许原玩家恢复连接');
     if(room.players.length>=room.capacity)fail('房间人数已满');
@@ -331,16 +342,16 @@ async function api(req,res,url) {
     case 'add_bot':onlyOwner(room,human.id);createBot(room);break;
     case 'remove_bot':{
       onlyOwner(room,human.id);
-      if(room.phase!=='lobby')fail('游戏开始后不能移除 AI');
+      if(room.phase!=='lobby')fail('游戏开始后不能移除电脑玩家');
       const bot=room.players.find(p=>p.id===data.botId&&p.bot);
-      if(!bot)fail('未找到 AI 玩家');
+      if(!bot)fail('未找到电脑玩家');
       room.players=room.players.filter(p=>p.id!==bot.id);break;
     }
-    case 'start':onlyOwner(room,human.id);startGame(room);setDeadline(room);scheduleTurn(room);break;
+    case 'start':onlyOwner(room,human.id);startRound(room);break;
     case 'rematch':{
       onlyOwner(room,human.id);
       if(room.phase!=='finished')fail('本局尚未结束');
-      startGame(room);setDeadline(room);scheduleTurn(room);break;
+      startRound(room);break;
     }
     case 'shuffle':shuffleHand(room,human.id);break;
     case 'move':moveCard(room,human.id,data.from,data.to);break;

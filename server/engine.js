@@ -96,18 +96,20 @@ export function startGame(room, rng = randomInt) {
   room.animationUntil = 0;
   room.players.forEach(p => { p.hand = []; p.aiShuffleCheckedTurn = null; });
   deck.forEach((card, idx) => { room.players[idx % room.players.length].hand.push(card); });
+  const deal = {counts:room.players.map(p=>({id:p.id,count:p.hand.length}))};
   room.players.forEach(p => {
     const pairs = discardPairs(p.hand);
     pairs.forEach(cards => room.pairs.push({ cards, playerId: p.id, turn: 0 }));
   });
   markEscaped(room);
-  if (finishIfNeeded(room)) return;
+  deal.pairs = room.pairs.length;
+  if (finishIfNeeded(room)) {room.lastAction.deal=deal;return;}
   const alive = livePlayers(room);
   const initial = alive[rng(alive.length)];
   room.currentPlayerId = initial.id;
   room.targetPlayerId = nextSeat(room, initial.id, -1);
   room.deadline = Date.now() + 30000;
-  room.lastAction = { kind: 'started', id: (room.actionId = (room.actionId || 0) + 1) };
+  room.lastAction = { kind: 'started', deal, id: (room.actionId = (room.actionId || 0) + 1) };
 }
 
 export function moveCard(room, playerId, fromIndex, toIndex) {
