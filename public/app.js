@@ -1,7 +1,7 @@
 const app = document.querySelector('#app');
 const toastEl = document.querySelector('#toast');
 const glyph = {S:'♠',H:'♥',C:'♣',D:'♦'};
-const rankLabel = rank => ({A:'一',J:'侍',Q:'后',K:'王'}[rank] || rank);
+const rankLabel = rank => String(rank);
 const cardName = card => `${{S:'黑桃',H:'红桃',C:'梅花',D:'方块'}[card.suit]}${rankLabel(card.rank)}`;
 const state = {
   session:null, view:null, form:'home', selected:null, selectedKey:null,
@@ -322,17 +322,17 @@ function landing() {
   return `<div class="home-page"><header class="home-topbar"><span class="home-welcome">围桌而坐，好戏开场</span><button class="round-button" data-ui="settings" aria-label="游戏设置">${icon('settings')}</button></header>
     <main class="home-stage"><section class="home-entry">${brand(true)}<p class="home-tagline">二至六人围桌，抽一张，配一对。</p>
       <div class="hero-buttons"><button class="btn btn-primary" data-ui="quick">${icon('cards')}快速开始</button><button class="btn btn-cream" data-ui="create">${icon('people')}创建房间</button><button class="btn btn-cream" data-ui="join">${icon('door')}加入房间</button></div></section>
-      <aside class="home-rules parchment" aria-labelledby="home-rules-title"><h2 id="home-rules-title">游戏规则</h2><ol>
+      <aside class="home-rules parchment art-panel" aria-labelledby="home-rules-title"><header class="panel-heading"><h2 id="home-rules-title">游戏规则</h2></header><div class="panel-body"><ol>
         <li><span class="rule-symbol">${icon('cards')}</span><span>随机移除一张牌<small>一副扑克，藏好这一局的小秘密</small></span></li>
         <li><span class="rule-symbol">${icon('people')}</span><span>轮流从邻座抽牌<small>先选中，再确认；翻牌全桌可见</small></span></li>
         <li><span class="rule-symbol">♥</span><span>相同点数自动配对<small>不比花色，只看点数</small></span></li>
         <li><span class="rule-symbol">${icon('shuffle')}</span><span>配对成功即移出<small>手牌清空，就能安全脱身</small></span></li>
         <li><span class="rule-symbol">${icon('shell')}</span><span>最后留下乌龟者失败<small>手牌清空，就能安全脱身</small></span></li>
-      </ol></aside>
+      </ol></div></aside>
     </main><footer class="home-footer">一桌好牌，一起慢慢玩。</footer></div>`;
 }
 function modalFrame(title,content,extra='') {
-  return `<div class="modal-layer"><button class="modal-backdrop" data-ui="close-dialog" tabindex="-1" aria-label="关闭弹窗"></button><section class="parchment modal-panel ${extra}" role="dialog" aria-modal="true" aria-label="${h(title)}"><button class="modal-close round-button" data-ui="close-dialog" aria-label="关闭弹窗">${icon('close')}</button><h2>${h(title)}</h2>${content}</section></div>`;
+  return `<div class="modal-layer"><button class="modal-backdrop" data-ui="close-dialog" tabindex="-1" aria-label="关闭弹窗"></button><section class="parchment modal-panel art-panel ${extra}" role="dialog" aria-modal="true" aria-label="${h(title)}"><header class="panel-heading"><h2>${h(title)}</h2><button class="modal-close round-button" data-ui="close-dialog" aria-label="关闭弹窗">${icon('close')}</button></header><div class="panel-body">${content}</div></section></div>`;
 }
 function formView() {
   const type=state.form;
@@ -353,7 +353,7 @@ function tableSeats(v,lobby=false) {
 function roomView(v) {
   const me=v.players.find(p=>p.id===v.myId);
   return `<div class="game-page lobby-page">${tableToolbar(v)}<main class="game-layout"><section class="table lobby-table" aria-label="等待中的好友牌桌">${tableSeats(v,true)}
-    <div class="waiting-center"><h1 class="hanging-sign">等待朋友上桌<span>房间已准备好，分享号码就能加入</span></h1><div class="deck-stack" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="waiting-center"><div class="waiting-heading"><h1 class="hanging-sign">等待朋友上桌</h1><p class="waiting-note">房间已准备好，分享号码就能加入</p></div><div class="deck-stack" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="room-actions">${isHost()?`<button class="btn btn-cream" data-api="add_bot" ${v.players.length>=v.capacity?'disabled':''}>${icon('robot')}添加电脑</button>`:''}<button class="btn btn-cream" data-ui="copy">${icon('people')}邀请好友</button></div>
     ${isHost()?`<button class="btn btn-primary start-button" data-api="start" ${v.players.length<2?'disabled':''}>开始游戏</button>`:'<p class="waiting-owner">等房主开始，先坐一会儿。</p>'}</div>
     <div class="table-bottom"><span class="stat-chip">已入座 <strong>${v.players.length} / ${v.capacity}</strong></span><span class="lobby-hint">至少两人，即可开局</span></div></section>
@@ -411,15 +411,15 @@ function gameView(v) {
 function finishView(v) {
   const loser=getPlayer(v.loserId);
   const winners=v.escaped.map(id=>getPlayer(id)?.name).filter(Boolean);
-  return `<div class="finish-layer"><section class="finish-banner" role="dialog" aria-modal="true" aria-label="本局游戏结果">
-    <div class="result-mascot">${avatar(loser,true)}</div><div class="overline">本局结束</div><h2>${v.loserId===v.myId?'这次，你是乌龟！':'成功脱身！'}</h2>
+  return `<div class="finish-layer"><section class="finish-banner parchment art-panel" role="dialog" aria-modal="true" aria-label="本局游戏结果"><header class="panel-heading"><h2>本局结束</h2></header><div class="panel-body">
+    <div class="result-mascot">${avatar(loser,true)}</div><h3 class="result-title">${v.loserId===v.myId?'这次，你是乌龟！':'成功脱身！'}</h3>
     <p>本局乌龟：<strong>${h(loser?.name||'未知')}</strong><br>25 对牌已全部配齐，最后一张乌龟牌揭晓。</p>
     <div class="reveal-cards"><div><div class="reveal-label">开局移除</div>${playingCard(v.removed,0,false)}</div>
       <div><div class="reveal-label">剩余乌龟牌</div>${playingCard(v.lastCard,0,false)}</div></div>
     <div class="result-players">安全脱身：${winners.map(h).join('、')}</div>
     <div class="action-row" style="justify-content:center">${isHost()?'<button class="btn btn-primary" data-api="rematch">再来一局</button>':'<span class="pill">等待房主开启下一局</span>'}
     <button class="btn btn-soft" data-ui="leave">返回首页</button></div>
-  </section></div>`;
+  </div></section></div>`;
 }
 const pause = ms => new Promise(resolve=>setTimeout(resolve,ms));
 const reducedMotion = () => state.preferences.reduceMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -563,6 +563,30 @@ function dialogView() {
   if(state.dialog==='leave')return modalFrame('离开这张牌桌？',`<p class="modal-intro">${state.view?.phase==='playing'?'对局中离开会撤销恢复凭证，由电脑继续托管。':'离开后，可以用房间号重新加入等待中的牌桌。'}</p><div class="action-row"><button class="btn btn-primary" data-ui="close-dialog">继续坐一会儿</button><button class="btn btn-cream" data-ui="confirm-leave">离开牌桌</button></div>`);
   return '';
 }
+const observedPanels=new Set();
+function sizeArtPanel(panel) {
+  const width=panel.getBoundingClientRect().width;
+  if(!width||panel.dataset.artWidth===width.toFixed(2))return;
+  panel.dataset.artWidth=width.toFixed(2);
+  const scale=width/600;
+  panel.style.setProperty('--art-top',`${128*scale}px`);
+  panel.style.setProperty('--art-side',`${48*scale}px`);
+  panel.style.setProperty('--art-bottom',`${66*scale}px`);
+}
+const panelObserver=typeof ResizeObserver==='function'?new ResizeObserver(entries=>entries.forEach(entry=>sizeArtPanel(entry.target))):null;
+function updateArtwork() {
+  for(const panel of observedPanels)if(!panel.isConnected){panelObserver?.unobserve(panel);observedPanels.delete(panel);}
+  app.querySelectorAll('.art-panel').forEach(panel=>{
+    sizeArtPanel(panel);
+    if(!observedPanels.has(panel)){observedPanels.add(panel);panelObserver?.observe(panel);}
+  });
+  app.querySelectorAll('.btn').forEach(button=>{
+    if(button.querySelector('.button-content'))return;
+    const face=document.createElement('span');face.className='button-content';
+    while(button.firstChild)face.appendChild(button.firstChild);
+    button.appendChild(face);
+  });
+}
 function render() {
   const targetOffset=app.querySelector('.target-list')?.scrollLeft||0;
   const handOffset=app.querySelector('.hand-scroll')?.scrollLeft||0;
@@ -576,6 +600,7 @@ function render() {
   const key=state.form!=='home'?state.form:state.dialog;
   if(key!==state.dialogKey) {
     const host=app.querySelector('.dialog-host');host.innerHTML=dialogView();state.dialogKey=key;
+    updateArtwork();
     if(key)host.querySelector('input,select,button:not([tabindex="-1"])')?.focus();
     else (app.querySelector('.finish-banner button')||app.querySelector(`[data-ui="${state.returnFocus||'settings'}"]`))?.focus();
   }
@@ -585,6 +610,7 @@ function render() {
   }
   if(app.querySelector('.target-list')) app.querySelector('.target-list').scrollLeft=targetOffset;
   if(app.querySelector('.hand-scroll')) app.querySelector('.hand-scroll').scrollLeft=handOffset;
+  updateArtwork();
   updateCountdown();
 }
 function updateCountdown() {
@@ -698,6 +724,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>{
     document.querySelectorAll('.draw-effect,.pair-effect,.deal-effect,.deal-flight').forEach(el=>el.remove());
     finishEffect(effect);
   }
+  updateArtwork();
 });
 let dragIndex=null;
 app.addEventListener('dragstart',event=> {

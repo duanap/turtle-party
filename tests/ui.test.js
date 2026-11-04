@@ -78,3 +78,11 @@ test('被抽者只抬起被选中的那张手牌，取消选择会恢复',()=>{
   v.selection=null;vm.runInContext('state.view=fixture;render();',context);
   assert.doesNotMatch(app.innerHTML,/own-card being-selected/);
 });
+
+test('牌面保留标准 A、J、Q、K，不把点数翻译成中文字符',()=>{
+  const {app,context}=ui();const v=baseView();
+  v.myHand=[['S','A'],['H','J'],['C','Q'],['D','K']].map(([suit,rank])=>({id:`${suit}-${rank}`,suit,rank}));
+  context.fixture=v;vm.runInContext('state.view=fixture;render();',context);
+  const labels=[...app.innerHTML.matchAll(/class="value">([^<]+)</g)].map(match=>match[1]);
+  assert.deepEqual(labels,['A','J','Q','K']);
+});

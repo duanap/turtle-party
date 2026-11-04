@@ -11,6 +11,33 @@ async function snapshot(page){return page.evaluate
 async function screen(page,name){const file=path.join(output,name+'.png');await page.screenshot({path:file});screenshots.push(file);}
 async function noOverflow(page){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'horizontal overflow');}
 async function rowLayout(page){for(const field of await page.locator('.field').all()){const label=await field.locator('span').boundingBox(),input=await field.locator('input,select').boundingBox();assert.ok(Math.abs(label.y+label.height/2-input.y-input.height/2)<3,'field wrapped');}await noOverflow(page);}
+async function chineseInterface(page){return page.evaluate(()=>{
+ const copy=document.body.cloneNode(true);
+ copy.querySelectorAll('.card .value').forEach(el=>{if(/^[AJQK]$/.test(el.textContent.trim()))el.textContent='';});
+ copy.querySelectorAll('.draw-caption').forEach(el=>{el.textContent=el.textContent.replace(/(黑桃|红桃|梅花|方块)[AJQK]\b/g,'$1');});
+ return !/[A-Za-z]/.test(copy.textContent);
+});}
+async function artworkAlignment(page){
+ await page.waitForTimeout(60);
+ const problems=await page.evaluate(()=>{
+  const issues=[];
+  for(const panel of document.querySelectorAll('.art-panel')){
+   const r=panel.getBoundingClientRect(),title=panel.querySelector('.panel-heading h2'),t=title.getBoundingClientRect();
+   // The source PNG's brown title region spans y=20..100 on its 600px-wide canvas.
+   if(Math.abs(t.x+t.width/2-r.x-r.width/2)>2||Math.abs(t.y+t.height/2-r.y-r.width*60/600)>2)issues.push('panel title off artwork');
+   const body=panel.querySelector('.panel-body').getBoundingClientRect();
+   if(body.y<t.y+t.height)issues.push('body overlaps title');
+  }
+  for(const button of document.querySelectorAll('.btn')){
+   const r=button.getBoundingClientRect(),label=button.querySelector('.button-content');if(!label)continue;
+   const t=label.getBoundingClientRect(),font=parseFloat(getComputedStyle(button).fontSize);
+   if(Math.abs(t.x+t.width/2-r.x-r.width/2)>2||Math.abs(t.y+t.height/2-r.y-r.height*.47)>2)issues.push('button label off artwork');
+   if(font>r.height*.48)issues.push('button font too large');
+  }
+  return issues;
+ });
+ assert.deepEqual(problems,[]);
+}
 async function modalAndLayoutChecks(browser){
  const c=await browser.newContext({viewport:{width:1440,height:900}});
  const p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
@@ -19,16 +46,21 @@ async function modalAndLayoutChecks(browser){
  for(const viewport of [{width:1440,height:900},{width:1280,height:720},{width:844,height:390},{width:740,height:360},{width:667,height:375},{width:390,height:844}]){
   await p.setViewportSize(viewport);await noOverflow(p);
   assert.equal(await p.locator('.home-rules li').count(),5);
-  await p.locator('[data-ui="join"]').click();await rowLayout(p);
-  assert.equal(await background.evaluate(el=>el.isConnected),true);
-  await p.locator('[name="code"]').fill('123');
-  await p.locator('button[type="submit"]').click();
-  assert.match(await p.locator('.form-error').innerText(),/六位数字/);
-  await p.keyboard.press('Escape');assert.equal(await p.locator('[role="dialog"]').count(),0);
+  for(const entry of ['quick','create','join']){
+   await p.locator(`[data-ui="${entry}"]`).click();await rowLayout(p);await artworkAlignment(p);
+   assert.equal(await background.evaluate(el=>el.isConnected),true);
+   if(entry==='join'){
+    await p.locator('[name="code"]').fill('123');await p.locator('button[type="submit"]').click();
+    assert.match(await p.locator('.form-error').innerText(),/六位数字/);
+    if(viewport.width===390)await screen(p,'alignment-join-phone');
+   }
+   await p.keyboard.press('Escape');assert.equal(await p.locator('[role="dialog"]').count(),0);
+  }
   if(viewport.width===390)await screen(p,'immersive-home-phone');
  }
  await p.setViewportSize({width:1440,height:900});
  await p.locator('[data-ui="settings"]').click();
+ await artworkAlignment(p);
  assert.equal(await p.locator('[name="sound"]').isChecked(),false);
  await p.locator('[name="sound"]').check();
  assert.equal(await p.evaluate(()=>localStorage.getItem('turtle-sound')),'on');
@@ -46,11 +78,13 @@ async function modalAndLayoutChecks(browser){
  checks.push('六种视口的表单单行、常显规则、背景节点保留；弹窗焦点循环及设置持久化');
  for(let capacity=2;capacity<=6;capacity++){
   await p.locator('[data-ui="create"]').click();
+  await artworkAlignment(p);
   await p.locator('[name="name"]').fill('布局校验');
   await p.locator('[name="capacity"]').selectOption(String(capacity));
   await p.locator('button[type="submit"]').click();await p.waitForSelector('.lobby-page');await wait(200);
   assert.equal(await p.locator('.seat').count(),capacity);
-  await p.locator('[data-ui="leave"]').click();await p.keyboard.press('Escape');
+  await p.locator('[data-ui="rules"]').click();await artworkAlignment(p);await p.keyboard.press('Escape');
+  await p.locator('[data-ui="leave"]').click();await artworkAlignment(p);await p.keyboard.press('Escape');
   assert.equal(await p.locator('.lobby-page').count(),1);
   if(capacity===6){
    for(let i=0;i<5;i++){await p.locator('[data-api="add_bot"]').click();await p.waitForFunction(n=>document.querySelectorAll('.seat:not(.empty-seat)').length===n,i+2);}
@@ -74,6 +108,7 @@ async function modalAndLayoutChecks(browser){
   await p.locator('[data-ui="confirm-leave"]').click();await p.waitForSelector('.home-page');
  }
  checks.push('二至六人座位、同场景洗牌发牌、开局座位稳定、三种小横屏牌面不小于四十四像素');
+ checks.push('快速开始、创建、加入、设置、玩法及退出弹窗标题和按钮均位于 PNG 的实际安全区域');
  await c.close();
 }
 
@@ -87,7 +122,7 @@ async function modalAndLayoutChecks(browser){
    page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
    page.on('dialog',d=>d.accept());await page.goto(base);
    assert.equal(await page.locator('.home-rules').count(),1);assert.equal(await page.locator('[data-ui="help"]').count(),0);
-   assert.ok(!/[A-Za-z]/.test(await page.locator('body').innerText()),'English on homepage');await noOverflow(page);
+   assert.ok(await chineseInterface(page),'English on homepage');await noOverflow(page);
   }
   checks.push('三种视口：首页规则常显、中文界面、无横向溢出');
   await screen(pages[0],'immersive-home');
@@ -108,6 +143,8 @@ async function modalAndLayoutChecks(browser){
    const v=await snapshot(host);
    if(v.phase==='finished'){
     finished=true;
+    for(const p of pages){await p.waitForSelector('.finish-banner');await artworkAlignment(p);}
+    await screen(host,'alignment-result-desktop');
     if(paired&&unpaired)break;
     await host.locator('[data-api="rematch"]').click();await wait(200);continue;
    }
@@ -127,7 +164,7 @@ async function modalAndLayoutChecks(browser){
    if(n===0)await screen(target,'immersive-target-selected');
    await actor.locator('[data-api="draw"]').click();
    for(const p of pages)await p.waitForSelector('.draw-effect[data-stage="revealed"]');
-   for(const p of pages){assert.equal(await p.locator('.draw-effect .flip-front [data-card-id]').getAttribute('data-card-id'),card.id);assert.equal(await p.locator('.finish-layer').count(),0);assert.ok(!/[A-Za-z]/.test(await p.locator('body').innerText()),'English during game');}
+   for(const p of pages){assert.equal(await p.locator('.draw-effect .flip-front [data-card-id]').getAttribute('data-card-id'),card.id);assert.equal(await p.locator('.finish-layer').count(),0);assert.ok(await chineseInterface(p),'English during game');}
    if(!paired&&!unpaired)await screen(actor,'immersive-card-revealed');
    await actor.waitForSelector('.draw-effect',{state:'detached'});
    assert.equal(await actor.locator(`.hand-scroll [data-card-id="${card.id}"]`).count(),1,'drawn card never arrived in hand');

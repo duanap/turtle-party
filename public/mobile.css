@@ -2,32 +2,32 @@
   .home-stage{ gap:6%; padding-left:7vw; padding-right:7vw; grid-template-columns:minmax(0,1.12fr) minmax(260px,.88fr) }
   .brand-emblem{ height:230px }
   .home-tagline{ font-size:12px }
-  .home-rules{ padding:27px 20px 18px }
-  .home-rules li{ font-size:15px; padding:17px 0; gap:8px }
-  .home-rules small{ font-size:10px }
-  .wood-ribbon{ gap:12px; padding:11px 15px; font-size:12px }
-  .wood-ribbon>*+*{ padding-left:12px }
+
+
+
+
+
   .game-topbar{ gap:12px }
   .brand-mini{ width:131px }
   .top-actions{ gap:7px }
   .round-button{ width:39px; height:39px }
-  .room-copy{ font-size:11px; gap:7px }
-  .room-copy strong{ font-size:16px }
-  .current-turn{ max-width:135px }
-  .connection-tag{ font-size:10px }
-  .seat{ width:125px }
+
+
+
+
+
   .avatar-large{ width:75px; height:75px }
-  .seat-portrait{ width:106px; height:82px }
-  .seat-portrait>.avatar{ left:15px }
-  .who{ min-width:103px; padding:5px 10px }
-  .who strong{ font-size:12px; max-width:113px }
-  .who span{ font-size:10px }
-  .seat-fan{ left:64px; top:10px }
-  .seat-fan i{ width:36px; height:52px; margin-left:-25px }
+
+
+
+
+
+
+
   .own-dock{ grid-template-columns:105px minmax(0,1fr) 90px; gap:12px; max-height:168px }
-  .own-seat{ width:105px }
-  .own-seat .who{ min-width:103px }
-  .shuffle-button{ font-size:18px; padding:13px 12px; min-height:55px }
+
+
+
   .draw-area{ top:42%; min-height:180px }
   .round-title{ font-size:21px }
   .card{ --card-w:65px; }
@@ -43,8 +43,8 @@
   .discard-count{ font-size:9px }
   .stat-chip{ font-size:10px; padding:6px 9px }
   .stat-chip strong{ font-size:12px }
-  .waiting-center{ gap:16px }
-  .start-button{ min-width:270px; min-height:62px; font-size:25px }
+
+
 }
 @media(max-width:680px) and (orientation:portrait)  {
   .scene-shell{ height:100svh; min-height:740px }
@@ -57,57 +57,57 @@
   .home-entry{ width:100%; margin-top:0 }
   .brand-emblem{ height:190px; max-width:330px }
   .home-tagline{ font-size:10px; margin:12px 0 20px }
-  .hero-buttons{ gap:12px }
-  .hero-buttons .btn{ font-size:20px; min-height:47px; max-width:240px }
-  .hero-buttons .btn-primary{ font-size:25px; min-height:61px; max-width:280px }
-  .hero-buttons .icon{ width:23px; height:23px }
-  .home-rules{ width:100%; max-width:340px; margin-top:39px; padding:26px 20px 14px }
-  .home-rules h2{ font-size:18px; max-width:170px; padding:8px 14px; margin-top:-43px; margin-bottom:6px }
-  .home-rules li{ font-size:13px; grid-template-columns:27px 1fr; padding:12px 0; gap:12px }
-  .home-rules small{ font-size:9px; margin-top:3px }
+
+
+
+
+
+
+
+
   .rule-symbol .icon{ width:24px; height:24px }
   .rule-symbol{ font-size:28px }
-  .home-rules>p{ font-size:9px; margin-top:6px }
+
   .home-footer{ display:none }
   .scene-shell[data-mode="home"]{ height:auto; min-height:100svh; overflow:visible }
   .scene-shell[data-mode="home"] .scene-table{ bottom:0 }
   .game-topbar{ inset:8px 12px auto; height:68px; gap:8px; align-items:flex-start }
   .brand-mini{ width:100px; height:62px }
-  .wood-ribbon{ position:absolute; left:4px; right:4px; top:76px; height:43px; padding:8px 10px; gap:10px; max-width:none; }
-  .wood-ribbon>*+*{ padding-left:10px }
-  .room-copy{ font-size:10px; gap:5px }
-  .room-copy strong{ font-size:15px; letter-spacing:.08em }
-  .room-copy .icon{ width:13px; height:13px }
-  .connection-tag{ font-size:9px; gap:6px }
-  .connection-tag:before{ width:5px; height:9px; box-shadow:3px -2px 0 #dfb64c }
-  .connection-tag[data-status="connected"]:before{ box-shadow:3px -2px 0 #82be5b }
-  .current-turn{ font-size:10px; max-width:102px }
+
+
+
+
+
+
+
+
+
   .top-actions{ padding-top:13px; gap:8px }
-  .round-button{ width:35px; height:35px; padding:7px }
+  .round-button{ width:35px; height:35px; }
   .round-button .icon{ width:19px; height:19px }
   .table{ inset:17% 1% 27% }
-  .seat{ width:92px }
-  .seat-portrait{ width:80px; height:67px }
+
+
   .avatar-large{ width:61px; height:61px; }
-  .seat-portrait>.avatar{ left:10px }
-  .who{ min-width:82px; max-width:102px; padding:5px 7px; margin-top:-10px; }
-  .who strong{ font-size:10px; max-width:83px }
-  .who span{ font-size:8px; margin-top:3px }
-  .seat-fan{ left:48px; top:11px }
-  .seat-fan i{ width:27px; height:39px; margin-left:-19px }
-  .empty-seat>.icon{ width:44px; height:44px }
-  .empty-seat>span{ font-size:10px; padding:4px 10px }
-  .remove-bot{ width:21px; height:21px; right:0; top:-3px }
-  .remove-bot .icon{ width:12px; height:12px }
-  .waiting-center{ top:39%; width:84%; gap:18px }
-  .hanging-sign{ font-size:21px }
-  .hanging-sign>span{ font-size:10px; margin-top:8px }
+
+
+
+
+
+
+
+
+
+
+
+
+
   .deck-stack{ width:60px; height:76px }
   .deck-stack>.icon{ width:35px; height:35px }
-  .room-actions{ gap:13px }
-  .room-actions .btn{ font-size:13px; padding:10px 16px; min-height:41px; gap:7px }
-  .room-actions .btn .icon{ width:20px; height:20px }
-  .start-button{ font-size:22px; min-width:230px; min-height:54px }
+
+
+
+
   .table-bottom{ left:5%; right:5%; bottom:0; gap:7px }
   .lobby-hint{ font-size:10px }
   .stat-chip{ font-size:8px; padding:6px 7px }
@@ -122,46 +122,46 @@
   .card-front .corner-suit{ font-size:11px; top:24px }
   .card-front .big-suit{ font-size:31px; margin-top:12px }
   .confirm-wrap{ min-height:38px; margin-top:6px }
-  .confirm-wrap .btn{ font-size:12px; min-height:35px; padding:9px 18px }
+
   .confirm-hint{ font-size:10px }
   .discard-zone{ right:4%; top:auto; bottom:9%; width:auto; height:35px; border:0; background:none; flex-direction:row; gap:7px }
   .discard-label{ font-size:9px; padding:4px 9px; }
   .discard-cards{ display:none }
   .discard-count{ font-size:8px }
   .own-dock{ left:3%; right:3%; bottom:2%; height:23%; max-height:180px; display:grid; grid-template-columns:1fr auto; grid-template-rows:40px minmax(0,1fr); gap:0 10px }
-  .own-seat{ grid-row:1; grid-column:1; display:flex; flex-direction:row; align-items:center; gap:7px; width:auto; margin:0 0 0 5px; justify-self:start; align-self:center }
-  .own-seat .seat-portrait{ width:35px; height:35px }
-  .own-seat .avatar{ width:35px; height:35px; left:0; top:0 }
-  .own-seat .who{ text-align:left; padding:0; margin:0; min-width:0; max-width:140px }
-  .own-seat .who strong{ font-size:11px; max-width:130px }
-  .own-seat .who span{ font-size:8px; margin-top:1px }
-  .shuffle-button{ grid-row:1; grid-column:2; margin:0 4px 0 0; padding:7px 13px; font-size:13px; min-height:33px; gap:5px; align-self:center }
-  .shuffle-button .icon{ width:17px; height:17px }
+
+
+
+
+
+
+
+
   .hand-area{ grid-row:2; grid-column:1/3; align-self:start }
   .dock-top{ height:17px; justify-content:space-between; padding:0 7px; font-size:10px; gap:8px; margin-top:5px }
   .dock-sub{ font-size:8px }
   .hand-scroll{ padding:23px 6px 8px; min-height:122px; gap:7px; justify-content:safe flex-start }
   .own-card{ --card-w:62px }
   .lobby-dock{ height:65px; bottom:8%; display:flex; align-items:center }
-  .lobby-dock .own-seat{ display:flex }
+
   .own-welcome{ margin:0 0 0 auto; font-size:9px; letter-spacing:0 }
-  .modal-layer{ padding:16px }
-  .modal-panel{ width:min(400px,96vw); padding:30px 19px 22px; max-height:calc(100svh - 32px) }
-  .modal-panel h2{ font-size:24px; margin-bottom:17px }
-  .field{ grid-template-columns:6.5em minmax(0,1fr); gap:8px }
-  .field>span{ font-size:12px }
-  .field input,.field select{ padding:12px 10px; font-size:13px }
-  .modal-panel .btn{ font-size:14px; padding:10px 22px }
+
+
+
+
+
+
+
   .network-banner{ top:134px; max-width:92%; padding:7px 11px; font-size:10px }
   .pair-effect-cards .card{ --card-w:75px }
   .pair-effect strong{ font-size:26px }
   .draw-caption{ font-size:12px; padding:7px 12px; bottom:calc(100% + 11px) }
   .deal-effect strong{ font-size:14px }
-  .finish-banner{ padding:18px 20px; max-height:93svh }
-  .finish-banner h2{ font-size:25px }
-  .finish-banner .card{ --card-w:65px }
-  .result-mascot{ height:77px }
-  .result-mascot .avatar{ width:85px; height:85px }
+
+
+
+
+
 }
 @media(max-width:1100px) and (max-height:600px) and (orientation:landscape)  {
   .scene-shell{ height:100svh; min-height:0 }
@@ -174,54 +174,54 @@
   .home-entry{ margin-top:1vh }
   .brand-emblem{ height:151px; max-width:340px }
   .home-tagline{ font-size:9px; margin:10px 0 10px }
-  .hero-buttons{ gap:9px }
-  .hero-buttons .btn{ min-height:35px; max-width:220px; font-size:17px; padding:8px 19px; gap:10px }
-  .hero-buttons .btn-primary{ min-height:47px; font-size:23px; max-width:260px; margin-bottom:0 }
-  .hero-buttons .icon{ width:20px; height:20px }
-  .home-rules{ margin-top:12vh; padding:20px 18px 11px; border-width:2px; border-radius:19px }
-  .home-rules h2{ font-size:18px; max-width:160px; margin:-39px auto 5px; padding:8px 15px; }
-  .home-rules li{ grid-template-columns:24px 1fr; padding:10px 0; font-size:12px; gap:9px }
-  .home-rules small{ font-size:8px; margin-top:3px }
+
+
+
+
+
+
+
+
   .rule-symbol{ font-size:25px }
   .rule-symbol .icon{ width:23px; height:23px }
-  .home-rules>p{ font-size:8px; margin-top:6px }
+
   .home-footer{ display:none }
   .game-topbar{ inset:4px 12px auto; height:49px; gap:10px }
   .brand-mini{ width:95px; height:47px }
-  .wood-ribbon{ padding:8px 13px; gap:10px; max-width:550px; }
-  .wood-ribbon>*+*{ padding-left:10px }
-  .room-copy{ font-size:10px; gap:5px }
-  .room-copy strong{ font-size:14px }
-  .room-copy .icon{ width:12px; height:12px }
-  .connection-tag{ font-size:9px; gap:5px }
-  .connection-tag:before{ width:5px; height:9px; box-shadow:3px -2px 0 #dfb64c }
-  .connection-tag[data-status="connected"]:before{ box-shadow:3px -2px 0 #82be5b }
-  .current-turn{ font-size:10px; max-width:130px }
-  .round-button{ width:31px; height:31px; padding:6px; }
+
+
+
+
+
+
+
+
+
+  .round-button{ width:31px; height:31px;  }
   .round-button .icon{ width:17px; height:17px }
   .top-actions{ gap:6px }
   .table{ inset:12% 2.7% 28% }
-  .seat{ width:100px }
-  .seat-portrait{ width:76px; height:54px }
+
+
   .avatar-large{ width:53px; height:53px; }
-  .seat-portrait>.avatar{ left:10px }
-  .who{ padding:4px 8px; min-width:87px; max-width:115px; margin-top:-9px; }
-  .who strong{ font-size:10px; max-width:97px }
-  .who span{ font-size:8px; margin-top:2px }
-  .seat-fan{ top:8px; left:45px }
-  .seat-fan i{ width:26px; height:37px; margin-left:-19px }
-  .empty-seat>.icon{ width:38px; height:38px }
-  .empty-seat>span{ font-size:9px; padding:3px 10px }
-  .remove-bot{ width:19px; height:19px; right:0; top:-4px }
-  .remove-bot .icon{ width:11px; height:11px }
-  .waiting-center{ top:41%; width:62%; gap:10px }
-  .hanging-sign{ font-size:19px }
-  .hanging-sign>span{ font-size:9px; margin-top:2px }
-  .waiting-center .deck-stack{ display:none }
-  .room-actions{ gap:20px }
-  .room-actions .btn{ padding:7px 17px; min-height:32px; font-size:12px; gap:7px }
-  .room-actions .icon{ width:18px; height:18px }
-  .start-button{ font-size:21px; min-width:235px; min-height:43px; padding:9px 20px }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   .waiting-owner{ font-size:11px; margin:0 }
   .table-bottom{ left:5%; right:5%; bottom:-1%; gap:8px }
   .stat-chip{ font-size:8px; padding:4px 8px }
@@ -237,21 +237,21 @@
   .card-front .corner-suit{ font-size:10px; top:21px; left:4px }
   .card-front .big-suit{ font-size:27px; margin-top:12px }
   .confirm-wrap{ min-height:29px; margin:0 }
-  .confirm-wrap .btn{ font-size:10px; padding:6px 17px; min-height:27px; }
+
   .confirm-hint{ font-size:9px }
   .own-dock{ left:4%; right:4%; bottom:1.3%; height:27%; max-height:112px; grid-template-columns:90px minmax(0,1fr) 76px; gap:11px }
-  .own-seat{ width:90px; margin-bottom:5px }
-  .own-seat .seat-portrait{ width:53px; height:48px }
-  .own-seat .avatar{ width:47px; height:47px; left:3px }
-  .own-seat .who{ min-width:87px; max-width:98px }
-  .own-seat .who strong{ max-width:80px; font-size:10px }
-  .own-seat .who span{ font-size:8px }
+
+
+
+
+
+
   .hand-scroll{ padding:18px 6px 5px; gap:6px; min-height:95px }
   .own-card{ --card-w:51px }
   .dock-top{ font-size:9px; margin-bottom:0; gap:10px; height:13px }
   .dock-sub{ font-size:8px }
-  .shuffle-button{ min-height:39px; padding:8px 10px; font-size:15px; margin-bottom:15px; gap:4px }
-  .shuffle-button .icon{ width:18px; height:18px }
+
+
   .own-card.being-selected{ transform:translateY(-13px) }
   .discard-zone{ right:0; top:72%; width:75px; height:60px; border-radius:17px; gap:3px }
   .discard-label{ font-size:9px; padding:3px 10px; }
@@ -262,23 +262,23 @@
   .discard-count{ font-size:7px }
   .discard-empty .icon{ width:28px; height:28px }
   .lobby-dock{ height:60px; max-height:60px; bottom:3%; display:flex }
-  .lobby-dock .own-seat{ margin:0 }
+
   .own-welcome{ font-size:9px; margin:0 0 17px 13px }
-  .modal-layer{ padding:12px }
-  .modal-panel{ max-height:calc(100svh - 24px); padding:19px 28px; width:min(465px,88vw) }
-  .modal-panel h2{ font-size:22px; margin:1px 0 12px }
-  .modal-intro{ font-size:11px; margin-bottom:7px }
-  .field{ margin:12px 0 }
-  .field input,.field select{ padding:9px 12px; font-size:12px }
-  .field>span{ font-size:12px }
-  .form-error{ min-height:14px; font-size:10px; margin:0 }
-  .action-row{ margin-top:11px; gap:13px }
-  .modal-panel .btn{ font-size:13px; min-height:33px; padding:8px 21px }
-  .settings-list>label{ padding:12px 0; font-size:13px }
-  .settings-list small{ font-size:10px; margin-top:4px }
-  .modal-note{ margin:13px 0; font-size:10px }
-  .full-rules{ font-size:12px; line-height:1.6; margin:0 }
-  .full-rules li{ padding:3px 0 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   .network-banner{ top:57px; font-size:9px; padding:5px 11px }
   .draw-caption{ font-size:10px; bottom:calc(100% + 8px); padding:5px 10px }
   .pair-effect{ gap:8px }
@@ -287,28 +287,28 @@
   .deal-effect .deck-stack{ width:50px; height:65px }
   .deal-effect{ gap:13px }
   .deal-effect strong{ font-size:13px }
-  .finish-banner{ width:min(540px,92vw); max-height:95svh; padding:15px 22px; display:grid; grid-template-columns:1fr 1fr; gap:4px 18px; align-items:center }
-  .result-mascot{ height:55px; grid-column:1 }
-  .result-mascot .avatar{ width:65px; height:65px }
-  .finish-banner .overline{ display:none }
-  .finish-banner h2{ font-size:23px; margin:3px 0; grid-column:1 }
-  .finish-banner>p{ font-size:10px; margin:3px 0; grid-column:1 }
-  .reveal-cards{ grid-column:2; grid-row:1/5; margin:0; gap:21px }
-  .reveal-label{ font-size:9px }
-  .reveal-cards .card{ --card-w:59px }
-  .result-players{ grid-column:1/3; font-size:10px }
-  .finish-banner .action-row{ grid-column:1/3; margin:7px 0 0 }
-  .finish-banner .btn{ font-size:12px; padding:8px 18px; min-height:33px }
+
+
+
+
+
+
+
+
+
+
+
+
 }
 @media(max-width:740px) and (max-height:430px) and (orientation:landscape)  {
   .game-topbar{ left:9px; right:9px; gap:6px }
   .brand-mini{ width:82px }
-  .wood-ribbon{ gap:7px; padding:8px 10px }
-  .wood-ribbon>*+*{ padding-left:8px }
-  .room-copy{ font-size:9px }
-  .room-copy strong{ font-size:13px }
-  .connection-tag{ font-size:8px }
-  .current-turn{ font-size:9px; max-width:110px }
+
+
+
+
+
+
   .round-button{ width:29px; height:29px }
   .top-actions{ gap:5px }
   .draw-area{ top:44%; width:64% }
@@ -321,17 +321,17 @@
   .home-stage{ gap:7%; padding:15px 9vw }
   .brand-emblem{ height:137px }
   .home-tagline{ font-size:8px }
-  .home-rules{ padding:17px 14px 10px }
-  .home-rules li{ font-size:11px; padding:9px 0 }
-  .home-rules small{ font-size:7px }
-  .hero-buttons .btn-primary{ font-size:21px; min-height:44px }
-  .hero-buttons .btn{ font-size:16px; min-height:33px }
-  .home-rules>p{ font-size:7px }
+
+
+
+
+
+
 }
 @media(hover:none) and (pointer:coarse)  {
   .card-back:hover:not(:disabled){ transform:none }
   .card-back.selected,.card-back.selected:hover:not(:disabled){ transform:translateY(-8px) }
-  .btn{ -webkit-tap-highlight-color:transparent }
+
 }
 @media(max-width:1100px) and (max-height:600px) and (orientation:landscape)  {
   .draw-area{ top:calc(45% - 18px) }
@@ -343,21 +343,21 @@
   .draw-area{ top:calc(44% - 18px) }
 }
 @media(max-width:1100px) {
-  .seat{ width:160px; height:50px; min-height:50px }
-  .seat-portrait{ width:50px; height:50px }
-  .seat-portrait>.avatar{ width:49px; height:50px; left:0 }
-  .who,.seat.active .who,.seat.target .who{ padding:7px 10px 6px 53px; min-width:0; max-width:none }
-  .who strong{ font-size:11px; max-width:100% }
-  .who span{ font-size:9px; margin-top:3px }
-  .seat-fan{ left:39px; top:-22px }
-  .seat-fan i{ width:27px; height:38px; margin-left:-19px }
-  .own-seat{ width:145px; height:46px; min-height:46px }
-  .own-seat .seat-portrait{ width:46px; height:46px }
-  .own-seat .avatar{ width:45px; height:46px; left:0 }
-  .own-seat .who{ padding:6px 9px 5px 49px; max-width:none; min-width:0 }
+
+
+
+
+
+
+
+
+
+
+
+
   .own-dock{ grid-template-columns:145px minmax(0,1fr) 90px }
   .brand-mini{ width:132px; height:75px }
-  .home-rules h2{ margin:0 }
+
 }
 @media(max-width:680px) and (orientation:portrait) {
   .scene-room{ height:43% }
@@ -366,32 +366,32 @@
   .brand-mini{ width:100px; height:62px }
   .brand-emblem{ height:160px }
   .home-stage{ padding-top:52px; padding-bottom:24px }
-  .home-rules{ margin-top:31px; padding:56px 20px 12px }
-  .home-rules h2{ top:4.5%; margin:0; font-size:18px }
-  .home-rules li{ padding:9px 0 }
-  .wood-ribbon{ padding:12px 13px }
-  .seat{ width:96px; height:35px; min-height:35px }
-  .seat-portrait{ width:34px; height:35px }
-  .seat-portrait>.avatar{ width:32px; height:35px; left:0 }
-  .who,.seat.active .who,.seat.target .who{ padding:4px 6px 4px 33px; min-width:0; max-width:none; margin:0; text-align:center }
-  .who strong{ font-size:9px; max-width:100% }
-  .who span{ font-size:7px; margin-top:2px }
-  .seat-fan{ left:27px; top:-18px }
-  .seat-fan i{ width:22px; height:31px; margin-left:-16px }
-  .empty-seat{ padding-left:28px }
-  .empty-seat>span{ font-size:10px; padding:0 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   .own-dock{ height:24%; max-height:190px; grid-template-columns:1fr auto; grid-template-rows:46px minmax(0,1fr) }
-  .own-seat{ width:150px; height:46px; min-height:46px; display:block }
-  .own-seat .seat-portrait{ width:46px; height:46px }
-  .own-seat .avatar{ width:44px; height:46px; left:0 }
-  .own-seat .who{ padding:6px 9px 6px 48px; min-width:0; max-width:none; text-align:center }
-  .own-seat .who strong{ font-size:11px; max-width:100% }
-  .own-seat .who span{ font-size:8px }
+
+
+
+
+
+
   .lobby-dock{ height:65px; display:flex }
-  .lobby-dock .own-seat{ display:block }
+
   .discard-label{ padding:5px 12px }
-  .modal-panel{ padding:30px 26px 24px }
-  .modal-panel h2{ margin:0 0 24px; font-size:23px }
+
+
 }
 @media(max-width:1100px) and (max-height:600px) and (orientation:landscape) {
   .scene-room{ height:42% }
@@ -399,48 +399,111 @@
   .scene-mascot{ width:65px }
   .brand-mini{ width:94px; height:50px }
   .brand-emblem{ height:151px }
-  .home-rules{ padding:56px 18px 14px }
-  .home-rules h2{ top:5.5%; margin:0; font-size:18px }
-  .home-rules li{ padding:8px 0 }
-  .wood-ribbon{ padding:10px 17px }
-  .seat{ width:123px; height:38px; min-height:38px }
-  .seat-portrait{ width:38px; height:38px }
-  .seat-portrait>.avatar{ width:37px; height:38px; left:0 }
-  .who,.seat.active .who,.seat.target .who{ padding:5px 8px 4px 41px; min-width:0; max-width:none }
-  .who strong{ font-size:9px; max-width:100% }
-  .who span{ font-size:7px; margin-top:2px }
-  .seat-fan{ left:30px; top:-18px }
-  .seat-fan i{ width:23px; height:32px; margin-left:-17px }
-  .empty-seat{ padding-left:31px }
+
+
+
+
+
+
+
+
+
+
+
+
+
   .own-dock{ grid-template-columns:123px minmax(0,1fr) 76px; gap:8px }
-  .own-seat{ width:123px; height:38px; min-height:38px }
-  .own-seat .seat-portrait{ width:38px; height:38px }
-  .own-seat .avatar{ width:36px; height:38px; left:0 }
-  .own-seat .who{ padding:5px 8px 4px 40px; min-width:0; max-width:none }
-  .own-seat .who strong{ font-size:9px; max-width:100% }
-  .hanging-sign{ padding:8px 24px 10px; font-size:16px }
-  .hanging-sign>span{ font-size:8px }
-  .modal-panel{ padding:25px 32px 20px }
-  .modal-panel h2{ font-size:21px; margin:0 0 23px }
+
+
+
+
+
+
+
+
+
   .discard-label{ padding:5px 12px }
   .draw-caption{ padding:7px 14px }
-  .result-mascot{ margin-top:15px }
+
 }
 @media(max-width:740px) and (max-height:430px) and (orientation:landscape) {
   .own-dock{ grid-template-columns:113px minmax(0,1fr) 72px; gap:7px }
-  .own-seat{ width:113px }
-  .home-rules{ padding:53px 15px 11px }
-  .home-rules li{ padding:7px 0 }
+
+
+
   .brand-emblem{ height:137px }
 }
 
 @media(max-width:1100px){.round-button>.icon-art{width:100%;height:100%}}
 @media(max-width:680px) and (orientation:portrait){
- .seat{width:110px;height:40px;min-height:40px}.seat-portrait{width:38px;height:40px}.seat-portrait>.avatar{width:36px;height:40px}
- .who,.seat.active .who,.seat.target .who{padding:5px 7px 4px 37px}.who strong{font-size:10px}.who span{font-size:8px;margin-top:2px}
- .seat-ring[data-capacity="6"] .seat:nth-child(3){top:16%}
- .seat-ring[data-capacity="6"] .seat:first-child,.seat-ring[data-capacity="5"] .seat:first-child{left:14.5%}
- .seat-ring[data-capacity="6"] .seat:last-child,.seat-ring[data-capacity="5"] .seat:last-child{left:85.5%}
- .own-seat{width:150px;height:46px;min-height:46px}.own-seat .who{padding:6px 9px 6px 48px}.own-seat .who strong{font-size:11px}.own-seat .who span{font-size:8px}
+
+
+
+
+
+
 }
-@media(max-width:1100px) and (max-height:600px) and (orientation:landscape){.who strong{font-size:10px}.who span{font-size:8px}}
+@media(max-width:1100px) and (max-height:600px) and (orientation:landscape){}
+
+/* Artwork components have one sizing rule per breakpoint. */
+@media(max-width:1100px){
+ .seat{--seat-w:172px}.own-seat{--seat-w:170px}.who strong{font-size:13px}.who span{font-size:11px}
+ .own-dock{grid-template-columns:170px minmax(0,1fr) 102px}.shuffle-button{min-width:102px;width:102px}
+ .wood-ribbon{gap:11px;height:52px;min-height:52px;padding:0 22px 3px}.wood-ribbon>*+*{padding-left:10px}
+ .room-copy{font-size:12px}.room-copy strong{font-size:17px}.current-turn{max-width:145px;font-size:12px}.connection-tag{font-size:11px}
+}
+@media(max-width:680px) and (orientation:portrait){
+ .hero-buttons{gap:6px}.hero-buttons .btn{--control-h:66px;--control-font:18px;width:238px}.hero-buttons .btn-primary{--control-h:78px;--control-font:22px;width:270px}
+ .home-rules{margin-top:24px;max-width:360px}.panel-heading h2{font-size:22px}
+ .home-rules li{font-size:14px;padding:12px 0;grid-template-columns:26px minmax(0,1fr);gap:10px}.home-rules small{font-size:11px}.home-rules .rule-symbol .icon{width:25px;height:25px}
+ .modal-panel{width:calc(100vw - 32px)}.field{grid-template-columns:74px minmax(0,1fr);gap:9px;margin:14px 0}.field>span{font-size:13px}.field input,.field select{font-size:14px;height:42px;padding:9px 10px}
+ .modal-intro{font-size:13px;margin-bottom:14px}.btn{--control-h:48px;--control-font:15px;min-width:126px}.btn .icon{width:20px;height:20px}
+ .action-row,.room-actions{gap:10px}.settings-list>label{font-size:14px;min-height:70px}.settings-list small,.modal-note{font-size:12px}
+ .full-rules{font-size:14px}.form-error{font-size:12px}
+ .wood-ribbon{position:absolute;left:4px;right:4px;top:76px;max-width:none;height:44px;min-height:44px;padding:0 17px 2px;gap:9px}
+ .room-copy{font-size:11px;gap:5px}.room-copy strong{font-size:16px}.room-copy .icon{width:13px;height:13px}.connection-tag{font-size:10px;gap:4px}.wood-ribbon>*+*{padding-left:8px}.current-turn{font-size:11px;max-width:94px}
+ .seat{--seat-w:130px}.who{gap:1px}.who strong{font-size:11px}.who span{font-size:9.5px}.who strong em{font-size:9px}
+ .seat-fan{top:-20px}.seat-fan i{width:24px;height:34px;margin-left:-17px}
+ .seat-ring[data-capacity="6"] .seat:nth-child(3){top:16%}
+ .seat-ring[data-capacity="6"] .seat:nth-child(2){left:24%;top:29%}.seat-ring[data-capacity="6"] .seat:nth-child(4){left:76%;top:29%}
+ .seat-ring[data-capacity="6"] .seat:first-child,.seat-ring[data-capacity="5"] .seat:first-child{left:18%;top:53%}
+ .seat-ring[data-capacity="6"] .seat:last-child,.seat-ring[data-capacity="5"] .seat:last-child{left:82%;top:53%}
+ .seat-ring[data-capacity="5"] .seat:nth-child(2){left:31%}.seat-ring[data-capacity="5"] .seat:nth-child(3){left:69%}
+ .own-seat{--seat-w:168px;margin:0 0 0 3px;grid-row:1;grid-column:1;justify-self:start;align-self:center}
+ .own-seat .who strong{font-size:12px}.own-seat .who span{font-size:10.5px}
+ .own-dock{height:25%;max-height:208px;grid-template-columns:1fr auto;grid-template-rows:52px minmax(0,1fr);gap:0 8px}
+ .shuffle-button{--control-h:42px;--control-font:15px;min-width:102px;width:102px;grid-row:1;grid-column:2;align-self:center;margin:0 3px 0 0}
+ .dock-title{font-size:12px}.dock-sub{font-size:11px}
+ .empty-seat{padding-left:28%}.empty-seat>span{font-size:11px}
+ .remove-bot{width:26px;height:26px;right:-2px;top:-10px}
+ .waiting-center{top:31%;width:88%;gap:12px}.hanging-sign{width:280px;height:58px;font-size:22px}.waiting-note{font-size:12px;margin-top:7px}
+ .waiting-center .deck-stack{width:46px;height:58px}
+ .room-actions .btn{--control-h:46px;--control-font:14px;min-width:126px}
+ .start-button{--control-h:60px;--control-font:20px;width:238px}
+ .confirm-wrap .btn{--control-h:42px;--control-font:14px;min-width:170px}
+ .result-title{font-size:23px}.result-mascot{height:65px}.result-mascot .avatar{width:76px;height:65px}.finish-banner p{font-size:13px}.reveal-cards{gap:23px}.reveal-cards .card{--card-w:64px}
+}
+@media(max-width:1100px) and (max-height:600px) and (orientation:landscape){
+ .btn{--control-h:40px;--control-font:13px;min-width:120px}.btn .icon{width:18px;height:18px}
+ .hero-buttons{gap:4px}.hero-buttons .btn{--control-h:43px;--control-font:15px;width:205px}.hero-buttons .btn-primary{--control-h:53px;--control-font:19px;width:238px}
+ .home-rules{margin-top:6vh;max-width:310px}.panel-heading h2{font-size:19px}.home-rules li{grid-template-columns:22px minmax(0,1fr);font-size:12px;padding:7px 0;gap:8px}.home-rules small{font-size:10px;margin-top:3px}.home-rules .rule-symbol{font-size:24px}.home-rules .rule-symbol .icon{width:22px;height:22px}
+ .modal-panel,.finish-banner{width:min(420px,calc(100vw - 32px))}
+ .form-panel .modal-intro{display:none}.field{grid-template-columns:79px minmax(0,1fr);gap:10px;margin:10px 0}.field>span{font-size:13px}.field input,.field select{height:38px;font-size:13px;padding:7px 10px}
+ .form-error{font-size:12px;min-height:16px}.action-row{margin-top:8px;gap:10px}.settings-list>label{min-height:55px;padding:8px 0;font-size:13px}.settings-list small{font-size:11px;margin-top:3px}.modal-note{font-size:11px;margin:9px 0}.full-rules{font-size:13px;line-height:1.65}.full-rules li{padding:3px 0}
+ .wood-ribbon{height:42px;min-height:42px;gap:8px;padding:0 17px 2px}.wood-ribbon>*+*{padding-left:8px}.room-copy{font-size:10px;gap:5px}.room-copy strong{font-size:15px}.room-copy .icon{width:13px;height:13px}.connection-tag{font-size:10px;gap:4px}.current-turn{font-size:11px;max-width:130px}
+ .seat{--seat-w:130px}.who{gap:1px}.who strong{font-size:10.5px}.who span{font-size:9.5px}.who strong em{font-size:9px}
+ .seat-fan{top:-17px}.seat-fan i{width:24px;height:34px;margin-left:-17px}
+ .own-seat{--seat-w:130px;margin-bottom:4px}.own-dock{grid-template-columns:130px minmax(0,1fr) 92px;gap:8px}
+ .shuffle-button{--control-h:40px;--control-font:14px;min-width:92px;width:92px;margin-bottom:12px}
+ .remove-bot{width:26px;height:26px;right:-2px;top:-10px}.empty-seat>span{font-size:11px}
+ .waiting-center{top:32%;width:66%;gap:10px}.hanging-sign{width:246px;height:36px;font-size:17px;padding-bottom:2px}.waiting-note{display:none}.waiting-center .deck-stack{display:none}
+ .room-actions .btn{--control-h:40px;--control-font:13px;min-width:126px}
+ .start-button{--control-h:46px;--control-font:18px;width:210px}
+ .confirm-wrap .btn{--control-h:34px;--control-font:12px;min-width:154px}
+ .dock-title{font-size:11px}.dock-sub{font-size:10px}
+ .finish-banner .panel-body{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:3px 14px}
+ .result-mascot{height:40px;grid-column:1;margin:0}.result-mascot .avatar{width:48px;height:40px}
+ .result-title{grid-column:1;font-size:19px;margin:3px 0}.finish-banner p{grid-column:1;font-size:11px;line-height:1.5;margin:0}
+ .reveal-cards{grid-column:2;grid-row:1/4;gap:18px;margin:0}.reveal-cards .card{--card-w:54px}.reveal-label{font-size:10px}
+ .result-players{grid-column:1/3;font-size:11px}.finish-banner .action-row{grid-column:1/3;margin-top:5px}
+}

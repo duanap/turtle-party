@@ -58,7 +58,7 @@ docs/           玩法、交互、AI、房间、架构、部署、测试与版�
 
 ## 开发与限制
 
-执行 `npm test` 运行 **32 项**自动化测试；GitHub Actions 同时验证 Node.js 20 和 22。可选浏览器验收命令为 `npm run test:browser`，需要开发环境提供 Playwright；该工具不属于游戏运行依赖，配置见[测试与验收](docs/测试与验收.md)。
+执行 `npm test` 运行 **33 项**自动化测试；GitHub Actions 同时验证 Node.js 20 和 22。可选浏览器验收命令为 `npm run test:browser`，需要开发环境提供 Playwright；该工具不属于游戏运行依赖，配置见[测试与验收](docs/测试与验收.md)。
 
 单实例内存房间使用私有 `data/rooms.json` 快照；**不得启动多个进程共享同一个数据文件**，亦不要将 `data/` 上传到仓库。浏览器本地保留会话凭证以支持断线恢复，应当使用 HTTPS。
 
