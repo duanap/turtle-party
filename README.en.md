@@ -1,22 +1,22 @@
 # Turtle Party · Old Maid
 
-**Version 0.3.0** | [简体中文](README.md)
+**Multiplayer browser card game** · **v0.3.0** · [简体中文](README.md)
 
-Turtle Party is a lightweight browser-based **Old Maid (抽乌龟)** card game for 2–6 players. Play against fair AI opponents or create a room and invite friends. Built with native HTML, CSS, JavaScript and Node.js: **no database, Docker, or third-party npm dependencies**.
+Play Old Maid with **2–6 players**, fair AI opponents, or friends in a shared room. Built with native HTML/CSS/JavaScript, Node.js, and SSE. **No Docker, database, or third-party npm dependencies.**
+
+> **Status:** A working deployment candidate, **not a production-validated release**. Real iOS/Android device testing, public-network tests, and independent security/performance reviews remain pending.
 
 ## Features
 
-- **Quick match:** One human and three AI players by default.
-- **Friend rooms:** Six-digit room codes, 2–6 players and optional AI fill-in seats.
-- **Classic rules:** Remove one card from a 52-card deck; discard rank-matching pairs. The last player holding an unmatched card loses.
-- **Card interaction:** Select and confirm a draw (tap directly if the target has one card), drag to reorder cards, or shuffle their positions.
-- **Fair AI:** Decisions use the AI's own cards, legitimately observed information and public discards, never hidden opponent hands or the removed card.
-- **Connection recovery:** SSE streams, reconnect retries, polling fallback, temporary AI takeover and seat recovery after reconnection.
-- **Single-server snapshots:** In-memory rooms with atomic local JSON backups.
+- **Quick play:** One human plus three AI opponents by default.
+- **Friend rooms:** Join via a six-character room code and add AI seats.
+- **Classic rules:** Remove one card from a 52-card deck; discard matching ranks; the last player with one unmatched card loses.
+- **Interaction:** Draw selection and confirmation, card rearrangement, shuffle, PC/mobile layout, and animation.
+- **Resilience:** SSE updates, reconnection, polling fallback, temporary autoplay, and private single-instance room snapshots.
 
-## Quick start
+## Run locally
 
-Requires **Node.js 20+**. No `npm install` is necessary.
+Requires **Node.js 20+**. You do not need to run `npm install`.
 
 ```bash
 npm start
@@ -24,45 +24,28 @@ npm start
 npm test
 ```
 
-For testing on a **trusted LAN only**, run `HOST=0.0.0.0 PORT=3000 npm start`. Never expose port 3000 directly to the public internet; use HTTPS via a reverse proxy.
+The server binds to `127.0.0.1` by default. For testing on a **trusted LAN only**, use `HOST=0.0.0.0 PORT=3000 npm start`. For internet-facing access, use HTTPS through a reverse proxy; **do not expose port 3000 directly**.
 
-## Technical architecture
+## Documentation
 
-| Component | Implementation |
+The detailed documentation is organized into separate Markdown files (currently primarily in Chinese):
+
+| Topic | File |
 | --- | --- |
-| Browser | Native HTML/CSS/JS with separate mobile CSS |
-| Backend | Native Node.js HTTP server |
-| Multiplayer | JSON action API + SSE for game state |
-| Game rules / AI | Server-authoritative state and information-limited AI |
-| Persistence | In-memory `Map` and private atomic `data/rooms.json` snapshot |
-| Authentication | Random bearer token; SHA-256 hash stored server-side |
-| Deployment | Optional systemd service and Nginx HTTPS proxy |
-| CI | GitHub Actions on Node.js 20 and 22 |
+| [Documentation index](docs/文档索引.md) | All technical and gameplay documentation |
+| [Game rules](docs/游戏规则.md) | Deck, turns, matching, winning and losing |
+| [Card interaction and layout](docs/抽牌交互与界面.md) | Desktop and mobile controls |
+| [AI strategy and fairness](docs/AI策略与信息公平.md) | Information boundaries and memory |
+| [Lobby and rooms](docs/大厅与房间.md) | Multiplayer flow and permissions |
+| [Architecture](docs/技术架构.md) | HTTP/SSE, server, persistence, config |
+| [Deployment](docs/部署与运维.md) | Debian, systemd, Nginx, HTTPS |
+| [Testing and acceptance](docs/测试与验收.md) | Automated tests and outstanding checks |
+| [v0.3 changelog](docs/更新说明-v0.3.md) | Version details and limitations |
 
-## Configuration
+The earlier [v1.2 design document](docs/抽乌龟-游戏设计-v1.2.md) remains available for historical reference and is not the current implementation-status source.
 
-| Variable | Default | Description |
-| --- | --- | --- |
-| `HOST` | `127.0.0.1` | Server binding |
-| `PORT` | `3000` | Port |
-| `DATA_DIR` | Project `data` directory | Private room snapshots |
-| `TRUST_PROXY` | `0` | Use `1` only behind trusted local Nginx |
-| `TURN_MS` | `30000` | Draw deadline in milliseconds |
-| `DISCONNECT_GRACE_MS` | `5000` | AI takeover grace period |
-| `MAX_ROOMS` | `300` | In-memory room limit |
-| `MAX_STREAMS` | `300` | Simultaneous SSE stream limit |
+## Development and limitations
 
-## Deployment and security limitations
+Run `npm test` before submitting a pull request. CI checks Node.js 20 and 22. Persistent room data is stored in a private JSON file and is safe for **one Node.js process only**. Do not commit `data/`. Browser sessions use `localStorage`; deploy behind HTTPS.
 
-This is a **deployment candidate, not a certified production service**. Testing on real iOS/Android devices, public-network testing, concurrency testing and independent security review remain to be completed.
-
-- Run **one** Node.js server process against a given snapshot; multiple processes sharing `data/rooms.json` risk corrupting state.
-- Never commit or publicly serve the private `data/` directory.
-- Browser session tokens are stored in `localStorage` for refresh/reconnect. Use HTTPS and avoid untrusted third-party scripts.
-- The Nginx/systemd templates live in [`deploy/`](deploy/). See the [Chinese README](README.md), [v0.3 update notes](docs/更新说明-v0.3.md), and [real-device/public deployment checklist](docs/实体手机与公网验收清单.md).
-
-## Contributing and licensing
-
-Issues and pull requests are welcome; run `npm test` before submitting changes.
-
-**No open-source license has been granted at this time.** A public repository does not automatically permit reuse or redistribution.
+**License:** No open-source license is currently granted. A public GitHub repository does not automatically authorize reuse or redistribution.
