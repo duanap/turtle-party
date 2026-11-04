@@ -1,11 +1,13 @@
 const app = document.querySelector('#app');
 const toastEl = document.querySelector('#toast');
 const glyph = {S:'♠',H:'♥',C:'♣',D:'♦'};
+const rankLabel = rank => ({A:'一',J:'侍',Q:'后',K:'王'}[rank] || rank);
+const cardName = card => `${{S:'黑桃',H:'红桃',C:'梅花',D:'方块'}[card.suit]}${rankLabel(card.rank)}`;
 const state = {
   session:null, view:null, form:'home', selected:null, selectedKey:null,
   network:'idle', pendingAction:null, reconciling:false,
-  help:false, busy:false, toastTimeout:null, dragged:null, touchDrag:null,
-  deferFinish:false, finishTimer:null, lastEffectKey:null
+  busy:false, toastTimeout:null, dragged:null, touchDrag:null,
+  effectActive:null, queuedSnapshot:null, waitingUntil:0, lastEffectKey:null
 };
 const h = (str='') => String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const getName = () => localStorage.getItem('turtle-name') || '玩家';
@@ -13,11 +15,12 @@ const nameInput = () => `<label class="field"><span>你的昵称</span><input na
 const getPlayer = (id) => state.view?.players.find(p=>p.id===id);
 const myPlayer = () => getPlayer(state.view?.myId);
 const isHost = () => state.view?.ownerId === state.view?.myId;
-const myTurn = () => state.view?.phase==='playing' && state.view.currentPlayerId===state.view.myId;
-const isLocked = () => state.view?.targetPlayerId===state.view?.myId;
+const showingDraw = () => Boolean(state.effectActive) || Date.now()<(state.view?.animationUntil||0);
+const myTurn = () => state.view?.phase==='playing' && state.view.currentPlayerId===state.view.myId && !showingDraw();
+const isLocked = () => state.view?.targetPlayerId===state.view?.myId || showingDraw();
 const introTop = (back=false) => `<header class="topbar">
   <div class="brand"><span class="brand-symbol">龟</span><span>抽乌龟</span></div>
-  <div class="top-right">${back?'<button class="text-btn" data-ui="home">← 返回首页</button>':'<span>轻松一抽 · 好运别走</span>'}<span class="pill">v0.3 · 规则 v1.2</span></div>
+  <div class="top-right">${back?'<button class="text-btn" data-ui="home">← 返回首页</button>':'<span>轻松一抽 · 好运别走</span>'}<span class="pill">公开亮牌 · 心理博弈</span></div>
 </header>`;
 function notice(message) {
   toastEl.textContent=message;toastEl.classList.add('visible');
@@ -75,15 +78,16 @@ function stopConnection() {
 function activeSession(session) {
   stopConnection();
   state.session=session;state.form='home';state.selected=null;state.view=null;
-  state.lastEffectKey=null;state.deferFinish=false;state.pendingAction=null;
+  state.lastEffectKey=null;state.effectActive=null;state.queuedSnapshot=null;state.pendingAction=null;
   localStorage.setItem('turtle-session',JSON.stringify(session));
   connect();
 }
 function clearSession() {
   stopConnection();
-  state.session=null;state.view=null;state.selected=null;state.deferFinish=false;
+  state.session=null;state.view=null;state.selected=null;state.effectActive=null;
+  state.queuedSnapshot=null;state.waitingUntil=0;
   state.pendingAction=null;
-  clearTimeout(state.finishTimer);
+  document.querySelectorAll('.draw-effect,.pair-effect').forEach(el=>el.remove());
   localStorage.removeItem('turtle-session');
   setNetworkStatus('idle');
 }
@@ -122,6 +126,11 @@ async function recover() {
 function applySnapshot(next) {
   if(!next || typeof next.revision!=='number')return;
   if(next.code!==state.session?.code)return;
+  if(state.effectActive) {
+    if(next.revision>state.effectActive.next.revision &&
+      (!state.queuedSnapshot||next.revision>state.queuedSnapshot.revision))state.queuedSnapshot=next;
+    return;
+  }
   if(state.view && next.revision<=state.view.revision)return;
   const previous=state.view;
   const action=next.lastAction?.kind==='finished'?next.lastAction.finalDraw:next.lastAction;
@@ -129,27 +138,35 @@ function applySnapshot(next) {
   const animate=previous?.phase==='playing' && previous.round===next.round &&
     action && ['draw','shuffle'].includes(action.kind) &&
     previous.lastAction?.id!==next.lastAction?.id && state.lastEffectKey!==effectKey;
-  const origin=animate && action.kind==='draw'
-    ? app.querySelector(`.target-list [data-slot="${action.slot}"]`)?.getBoundingClientRect()
-    : null;
   const key=`${next.round}:${next.turn}:${next.targetPlayerId}`;
   if(state.selectedKey!==key){state.selected=null;state.selectedKey=key;}
+  state.selected=next.selection?.actorId===next.myId?next.selection.slot:null;
   if(movingTouch?.active) {
     const handChanged=(previous?.myHand||[]).map(card=>card.id).join(',')!==
       (next.myHand||[]).map(card=>card.id).join(',');
     if(handChanged||next.targetPlayerId===next.myId||next.phase!==previous?.phase)cancelTouchDrag();
     else{state.view=next;updateCountdown();return;}
   }
-  state.view=next;
-  clearTimeout(state.finishTimer);
-  state.deferFinish=Boolean(next.phase==='finished' && animate && action.kind==='draw');
-  render();
-  if(animate) {
-    state.lastEffectKey=effectKey;
-    if(action.kind==='draw')playDrawEffect(action,origin,next);
-    if(action.kind==='shuffle')playShuffleEffect(action,next);
+  state.waitingUntil=next.animationUntil||0;
+  if(animate && action.kind==='draw' && action.card) {
+    const origin=app.querySelector(previous.myId===action.targetId
+      ? `.hand-scroll [data-own-card="${action.slot}"]`
+      : `.target-list [data-slot="${action.slot}"]`)?.getBoundingClientRect();
+    const effect={next,previous,action};
+    state.lastEffectKey=effectKey;state.effectActive=effect;
+    render();
+    void playDrawEffect(effect,origin).catch(error=>console.warn('抽牌动画中断，已同步最新牌桌',error)).finally(()=>{
+      if(state.effectActive!==effect)return;
+      state.effectActive=null;state.view=next;render();
+      const queued=state.queuedSnapshot;state.queuedSnapshot=null;
+      if(queued)applySnapshot(queued);
+    });
+    return;
   }
-  if(state.deferFinish)state.finishTimer=setTimeout(()=>{state.deferFinish=false;render();},1000);
+  state.view=next;render();
+  if(animate && action.kind==='shuffle') {
+    state.lastEffectKey=effectKey;playShuffleEffect(action,next);
+  }
 }
 function parseSseChunk(packet) {
   const type=packet.split('\n').find(row=>row.startsWith('event:'))?.slice(6).trim();
@@ -260,94 +277,94 @@ function landing() {
   if(state.form!=='home') return formView();
   return `<div class="page">${introTop()}
     <main class="hero">
-      <div><div class="overline">A LITTLE CARD GAME</div>
+      <div><div class="overline">一场有点心机的纸牌游戏</div>
         <h1>谁是最后的<br><span class="light">那只乌龟？</span></h1>
-        <p class="lead">抽一张，配一对，悄悄把乌龟留给别人。与好友联机，或直接挑战聪明又守规矩的 AI。</p>
-        <div class="hero-buttons"><button class="btn btn-primary" data-ui="quick">快速开始 · AI 对战</button>
+        <p class="lead">抽一张，配一对，悄悄把乌龟留给别人。与好友联机，或直接挑战聪明又守规矩的电脑玩家。</p>
+        <div class="hero-buttons"><button class="btn btn-primary" data-ui="quick">快速开始 · 电脑对战</button>
           <button class="btn btn-outline" data-ui="create">创建房间</button>
           <button class="btn btn-soft" data-ui="join">加入房间</button></div>
       </div>
       <div class="hero-illustration" aria-hidden="true"><div class="illustration-glow"></div><div class="deck-scene">
         <div class="demo-card one"></div><div class="demo-card three"></div>
-        <div class="demo-card two"><span class="corner">Q</span><span class="suit">♥</span></div><div class="turtle-bubble">🐢</div>
+        <div class="demo-card two"><span class="corner">后</span><span class="suit">♥</span></div><div class="turtle-bubble">🐢</div>
       </div></div>
     </main>
     <section class="details-bar"><div class="detail"><span class="round-icon">♣</span>2～6 人同桌</div>
       <div class="detail"><span class="round-icon">✦</span>自动配对 · 轻松上手</div>
-      <div class="detail"><span class="round-icon">◈</span>真人与 AI 混合</div>
-      <button class="btn btn-small btn-soft" data-ui="help">${state.help?'收起规则':'玩法与规则'}</button></section>
-    ${state.help?`<section class="popover"><h2>简单三步，看看谁留下乌龟</h2>
+      <div class="detail"><span class="round-icon">◈</span>真人与电脑同桌</div></section>
+    <section class="popover home-rules"><h2>简单三步，看看谁留下乌龟</h2>
       <p>① 开局从 52 张扑克中随机抽走 1 张，发完剩余 51 张。相同点数自动配对弃牌。</p>
-      <p>② 轮到你时，从指定邻座抽取一张背面牌。如果抽到对子就自动消除；否则加入自己的手牌。</p>
+      <p>② 轮到你时，先选一张牌，再确认抽取。被选中的牌会提起；抽到的牌向全桌翻开，移入手中后，相同点数自动配对消除。</p>
       <p>③ 手牌清空即安全脱身。最终 25 对牌全部弃掉，剩最后 1 张牌的人就是乌龟。</p>
-      <p>可拖动调整自己的手牌或使用「洗序」；被别人抽牌时手牌会锁定。</p></section>`:''}
+      <p>可拖动调整自己的手牌或使用「洗序」，打乱别人记住的位置；被别人抽牌时手牌会锁定。</p></section>
   </div>`;
 }
 function formView() {
   const type=state.form;
   const titles={quick:'快速开始',create:'创建房间',join:'加入房间'};
-  const descriptions={quick:'立即与三名 AI 同桌开局。',create:'创建专属牌桌，邀请好友加入，也可以用 AI 补位。',join:'输入好友分享的房间号即可加入。'};
+  const descriptions={quick:'立即与三名电脑玩家同桌开局。',create:'创建专属牌桌，邀请好友加入，也可以用电脑玩家补位。',join:'输入好友分享的六位数字房间号即可加入。'};
   return `<div class="page">${introTop(true)}<main class="form-panel">
-    <div class="overline">READY TO PLAY</div><h2>${titles[type]}</h2><p>${descriptions[type]}</p>
+    <div class="overline">准备上桌</div><h2>${titles[type]}</h2><p>${descriptions[type]}</p>
     <form data-form="${type}">${nameInput()}
       ${type==='create'?'<label class="field"><span>房间人数上限</span><select name="capacity"><option value="2">2 人</option><option value="3">3 人</option><option value="4" selected>4 人（推荐）</option><option value="5">5 人</option><option value="6">6 人</option></select></label>':''}
-      ${type==='join'?'<label class="field"><span>6 位房间号</span><input name="code" minlength="6" maxlength="6" placeholder="例如 A7H3KM" autocomplete="off" required style="text-transform:uppercase;letter-spacing:.2em"></label>':''}
+      ${type==='join'?'<label class="field"><span>6 位房间号</span><input name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="例如 012345" autocomplete="off" required></label>':''}
       <div class="action-row"><button class="btn btn-primary" type="submit">${titles[type]}</button><button class="btn btn-soft" data-ui="home" type="button">返回</button></div>
     </form></main></div>`;
 }
 function roomView(v) {
-  const memberSlots=v.players.map(p=>`<article class="member"><div class="avatar">${p.bot?'AI':h(p.name.slice(0,1))}</div>
+  const memberSlots=v.players.map(p=>`<article class="member"><div class="avatar">${p.bot?'机':h(p.name.slice(0,1))}</div>
       <div><strong>${h(p.name)} ${p.owner?'· 房主':''}</strong><small>${p.bot?'智能玩家':'真人玩家'}</small></div>
-      ${isHost()&&p.bot?`<button type="button" class="remove-bot" title="移除 AI" data-api="remove_bot" data-id="${h(p.id)}">移除</button>`:''}</article>`).join('');
+      ${isHost()&&p.bot?`<button type="button" class="remove-bot" title="移除电脑玩家" data-api="remove_bot" data-id="${h(p.id)}">移除</button>`:''}</article>`).join('');
   const blanks=Array.from({length:v.capacity-v.players.length},()=>'<article class="member"><div class="avatar" style="background:#f0f1ed;color:#b4bfb3">＋</div><div><strong>等待加入</strong><small>空位</small></div></article>').join('');
   return `<div class="page">${introTop(false)}<main class="room-card">
-    <div class="room-heading"><div><div class="overline">PRIVATE TABLE</div><h1>等朋友上桌</h1>
+    <div class="room-heading"><div><div class="overline">好友牌桌</div><h1>等朋友上桌</h1>
       <p>房间已准备好，分享房间号邀请好友。</p></div><div><div class="code-tag">${h(v.code)}</div>
       <div style="margin-top:9px;text-align:center"><button class="btn btn-small btn-soft" data-ui="copy">复制房间号</button></div></div></div>
     <div class="members">${memberSlots}${blanks}</div>
     <div class="room-actions">${isHost()?`<button class="btn btn-primary" data-api="start" ${v.players.length<2?'disabled':''}>开始游戏</button>
-      <button class="btn btn-soft" data-api="add_bot" ${v.players.length>=v.capacity?'disabled':''}>+ 添加 AI</button>`:'<span class="pill">等待房主开始游戏</span>'}
+      <button class="btn btn-soft" data-api="add_bot" ${v.players.length>=v.capacity?'disabled':''}>＋ 添加电脑</button>`:'<span class="pill">等待房主开始游戏</span>'}
       <button class="btn btn-outline" data-ui="leave">离开房间</button></div>
-    <div class="room-hint">已入座 ${v.players.length} / ${v.capacity} · 至少两名玩家（含 AI）即可开始 · 游戏开始后不再允许中途加入</div>
+    <div class="room-hint">已入座 ${v.players.length} / ${v.capacity} · 至少两名玩家（含电脑）即可开始 · 游戏开始后不再允许中途加入</div>
   </main></div>`;
 }
 function playingCard(card,idx,own=true) {
   const red=['H','D'].includes(card.suit);
-  return `<button class="card card-front ${red?'red':'black'} ${own?'own-card':''}" ${own?`draggable="true" data-own-card="${idx}" style="--card-index:${idx}"`:''} title="${h(card.rank)} ${glyph[card.suit]}" aria-label="${h(card.rank)} ${glyph[card.suit]}">
-      <span class="value">${h(card.rank)}</span><span class="corner-suit">${glyph[card.suit]}</span><span class="big-suit">${glyph[card.suit]}</span></button>`;
+  const raised=own && !state.effectActive && state.view?.selection?.targetId===state.view?.myId && state.view.selection.slot===idx;
+  return `<button type="button" class="card card-front ${red?'red':'black'} ${own?'own-card':''} ${raised?'being-selected':''}" data-card-id="${h(card.id)}" ${own?`draggable="${!isLocked()}" data-own-card="${idx}" style="--card-index:${idx}"`:'tabindex="-1"'} title="${h(cardName(card))}${raised?' · 对方正在选这张牌':''}" aria-label="${h(cardName(card))}${raised?'，对方正在选这张牌':''}">
+      <span class="value">${h(rankLabel(card.rank))}</span><span class="corner-suit">${glyph[card.suit]}</span><span class="big-suit">${glyph[card.suit]}</span></button>`;
 }
 function seat(p,v) {
   const status=p.escaped?'已脱身':p.id===v.currentPlayerId?'抽牌中':p.id===v.targetPlayerId?'等待被抽':`${p.count} 张牌`;
   return `<div data-player-seat="${h(p.id)}" class="seat ${p.id===v.currentPlayerId?'active':''} ${p.id===v.targetPlayerId?'target':''} ${p.escaped?'out':''}">
-    <div class="avatar">${p.bot?'AI':h(p.name.slice(0,1))}</div><div class="who"><strong>${h(p.name)}</strong><span>${status}</span></div></div>`;
+    <div class="avatar">${p.bot?'机':h(p.name.slice(0,1))}</div><div class="who"><strong>${h(p.name)}</strong><span>${status}</span></div></div>`;
 }
 function gameView(v) {
   const actor=getPlayer(v.currentPlayerId),target=getPlayer(v.targetPlayerId);
-  const me=myPlayer();const myActive=myTurn();const selected=state.selected;
+  const me=myPlayer();const myActive=myTurn();const selected=myActive?state.selected:v.selection?.slot;
   const liveCount=v.players.filter(p=>p.count>0).length;
   const isFinalTwo=liveCount===2;
   const competitors=v.players.filter(p=>p.id!==v.myId);
   const backCards=(v.targetSlots||[]).map(index=>`<button class="card card-back ${selected===index?'selected':''}" data-slot="${index}" aria-pressed="${selected===index}" ${!myActive?'disabled':''} aria-label="抽取第 ${index+1} 张暗牌" title="第 ${index+1} 张牌"></button>`).join('');
   let headline='等待玩家行动', subline='观察其他玩家的抽牌过程';
-  if(myActive){headline=`从 ${h(target?.name||'邻座')} 手中抽一张`;subline=`${target?.count||0} 张暗牌 · ${v.targetSlots.length===1?'点击唯一一张牌直接抽取':'点击选择，再确认抽取'}`;}
+  if(myActive){headline=`从 ${h(target?.name||'邻座')} 手中抽一张`;subline=`${target?.count||0} 张暗牌 · 点击选择，再确认抽取`;}
   else if(actor){headline=`${h(actor.name)} 正在抽牌`;subline=`正在从 ${h(target?.name||'邻座')} 的手牌中抽取`;
   if(v.escaped.includes(v.myId)){headline='你已安全脱身！';subline='继续围观，看看谁会留下乌龟';}
   }
-  if(v.phase==='finished' && state.deferFinish){headline='最后一张牌正在揭晓';subline='看看谁会留下乌龟';}
+  if(showingDraw()){headline='抽牌展示中';subline='翻开亮牌，移入手中，再看看能否配对';}
   const last=v.lastAction;
   const lastText=last?.kind==='draw'?(last.paired?'上一回合：成功配对':'上一回合：抽到一张新牌'):
     ['shuffle','reorder'].includes(last?.kind)?'有玩家调整了手牌顺序':'相同点数自动组成对子';
-  return `<div class="game-page">
+  return `<div class="game-page ${state.effectActive?'draw-presenting':''}">
     <header class="game-topbar"><div class="brand"><span class="brand-symbol">龟</span>抽乌龟</div>
       <div class="top-actions"><span class="game-meta">第 ${v.round} 局 · 房间 ${h(v.code)}</span><span class="pill connection-tag" id="connection-tag" data-status="${state.network}">${connectionLabel()}</span>
       <button class="btn btn-small btn-soft" data-ui="leave">退出</button></div></header>
     <div class="network-banner" id="network-banner" role="status" ${['connected','idle'].includes(state.network)?'hidden':''}>${state.network==='offline'?'网络已断开，保留座位和手牌；恢复联网后自动同步。':'连接不稳定，正在自动重连并核对最新回合，请勿重复操作。'}</div>
     <main class="game-layout"><section class="table ${isFinalTwo?'final-table':''}" aria-label="纸牌游戏桌">
       <div class="seat-row">${competitors.map(p=>seat(p,v)).join('')}</div>
-      <div class="draw-area"><div class="round-kicker">${isFinalTwo?'最后两人 · 谁会留下乌龟？':myActive?'YOUR TURN':v.escaped.includes(v.myId)?'SAFE':'WAITING'}</div>
+      <div class="draw-area"><div class="round-kicker">${isFinalTwo?'最后两人 · 谁会留下乌龟？':myActive?'轮到你了':v.escaped.includes(v.myId)?'安全脱身':'留心牌桌'}</div>
         <div class="round-title">${headline}</div><div class="round-subtitle">${subline}</div>
         <div class="target-list" role="group" aria-label="待抽取的背面扑克牌">${backCards}</div>
-        <div class="confirm-wrap ${myActive && v.targetSlots.length>1?'action-confirm':'status-confirm'}">${myActive && v.targetSlots.length>1?
+        <div class="confirm-wrap ${myActive && v.targetSlots.length?'action-confirm':'status-confirm'}">${myActive && v.targetSlots.length?
           `<button class="btn btn-warm btn-small" data-api="draw" ${selected===null?'disabled':''}>确认抽取${selected===null?'':' · 第 '+(selected+1)+'张'}</button>`:
           `<span class="confirm-hint">${h(lastText)}</span>`}</div>
       </div>
@@ -356,17 +373,17 @@ function gameView(v) {
         <span class="stat-chip">剩余玩家 <strong>${v.players.filter(p=>p.count>0).length}</strong></span></div>
     </section>
     <section class="own-dock"><div class="dock-top"><div><span class="dock-title">我的手牌 · ${me?.count||0} 张</span>
-      <span class="dock-sub">${isLocked()?'正在被抽牌，已锁定':'长按拖动排序 · 横向滑动查看更多'}</span></div>
+      <span class="dock-sub">${showingDraw()?'正在亮牌，稍后继续':isLocked()?'正在被抽牌，已锁定':'长按拖动排序 · 横向滑动查看更多'}</span></div>
       <button class="btn btn-small btn-soft" data-api="shuffle" ${isLocked()||!me?.count||me.count<2?'disabled':''}>↝ 洗序</button></div>
       <div class="hand-scroll" aria-label="我的手牌">${v.myHand.length?v.myHand.map((c,i)=>playingCard(c,i)).join(''):'<div class="empty-hand">手牌清空 · 安全脱身</div>'}</div></section></main>
-    ${v.phase==='finished'&&!state.deferFinish?finishView(v):''}
+    ${v.phase==='finished'&&!state.effectActive?finishView(v):''}
   </div>`;
 }
 function finishView(v) {
   const loser=getPlayer(v.loserId);
   const winners=v.escaped.map(id=>getPlayer(id)?.name).filter(Boolean);
   return `<div class="finish-layer"><section class="finish-banner" role="dialog" aria-modal="true" aria-label="本局游戏结果">
-    <div class="overline">GAME OVER</div><h2>${v.loserId===v.myId?'这次，你是乌龟！':'成功脱身！'}</h2>
+    <div class="overline">本局结束</div><h2>${v.loserId===v.myId?'这次，你是乌龟！':'成功脱身！'}</h2>
     <p>本局乌龟：<strong>${h(loser?.name||'未知')}</strong><br>25 对牌已全部配齐，最后一张乌龟牌揭晓。</p>
     <div class="reveal-cards"><div><div class="reveal-label">开局移除</div>${playingCard(v.removed,0,false)}</div>
       <div><div class="reveal-label">剩余乌龟牌</div>${playingCard(v.lastCard,0,false)}</div></div>
@@ -375,44 +392,84 @@ function finishView(v) {
     <button class="btn btn-soft" data-ui="leave">返回首页</button></div>
   </section></div>`;
 }
-// Visual effects only consume public lastAction metadata. A failed draw always
-// flies face down for observers; only successfully paired cards are revealed.
-function playDrawEffect(action,origin,view) {
-  if(!origin || typeof document.createElement!=='function') return;
-  const to=view.myId===action.actorId
-    ? app.querySelector('.hand-scroll')
-    : [...app.querySelectorAll('[data-player-seat]')].find(el=>el.dataset.playerSeat===action.actorId);
-  const destination=to?.getBoundingClientRect();
-  if(!destination || !document.body) return;
-  const card=document.createElement('div');
-  card.className='card card-back flying-card';
-  card.setAttribute('aria-hidden','true');
-  card.style.left=`${origin.left}px`;card.style.top=`${origin.top}px`;
-  card.style.width=`${origin.width}px`;card.style.height=`${origin.height}px`;
-  document.body.appendChild(card);
-  const dx=destination.left + destination.width/2 - (origin.left + origin.width/2);
-  const dy=destination.top + destination.height/2 - (origin.top + origin.height/2);
+const pause = ms => new Promise(resolve=>setTimeout(resolve,ms));
+async function animateBox(el,frames,duration) {
   const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  if(card.animate && !reduce) {
-    const flight=card.animate([
-      {transform:'translate(0,0) rotate(-6deg) scale(1)',opacity:1,offset:0},
-      {transform:`translate(${dx*.48}px,${dy*.48-34}px) rotate(8deg) scale(1.1)`,opacity:1,offset:.5},
-      {transform:`translate(${dx}px,${dy}px) rotate(0) scale(.78)`,opacity:.15,offset:1}
-    ],{duration:560,easing:'cubic-bezier(.25,.7,.19,1)',fill:'forwards'});
-    flight.finished.catch(()=>{}).finally(()=>card.remove());
-  } else card.remove();
-  if(action.paired && action.pair?.length===2) {
-    setTimeout(()=>playPairEffect(action.pair),reduce?0:480);
+  if(el.animate && !reduce) {
+    await el.animate(frames,{duration,easing:'ease-in-out',fill:'forwards'}).finished.catch(()=>{});
+  } else {
+    Object.assign(el.style,frames[frames.length-1]);
+    await pause(duration);
   }
 }
-function playPairEffect(pair) {
-  if(typeof document.createElement!=='function'||!document.body) return;
+function drawArrivalView({previous,action}) {
+  const view={...previous,selection:null,lastAction:action,
+    players:previous.players.map(player=>({...player,count:player.count+
+      (player.id===action.actorId?1:0)-(player.id===action.targetId?1:0)})),
+    myHand:[...previous.myHand]};
+  if(previous.myId===action.targetId)view.myHand.splice(action.slot,1);
+  if(previous.myId===action.actorId)view.myHand.push(action.card);
+  return view;
+}
+async function playDrawEffect(effect,origin) {
+  if(typeof document.createElement!=='function'||!document.body)return;
+  const {action,next,previous}=effect;
+  const alive=()=>state.effectActive===effect;
+  const table=app.querySelector('.table')?.getBoundingClientRect();
+  if(!table)return;
+  const from=origin||{left:table.left+table.width/2-32,top:table.top+table.height/2-45,width:64,height:91};
+  const dx=table.left+table.width/2-(from.left+from.width/2);
+  const dy=table.top+table.height*.56-(from.top+from.height/2);
+  const duration=Math.min(2400,Math.max(600,action.animationUntil? action.animationUntil-Date.now():2400));
   const el=document.createElement('div');
-  el.className='pair-effect';el.setAttribute('aria-hidden','true');
-  el.innerHTML=`<strong>配对成功</strong><div class="pair-effect-cards">${pair.map(card=>
-    `<div class="card card-front ${['H','D'].includes(card.suit)?'red':'black'}"><span class="value">${h(card.rank)}</span><span class="corner-suit">${glyph[card.suit]||''}</span><span class="big-suit">${glyph[card.suit]||''}</span></div>`).join('')}</div>`;
+  el.className='draw-effect';el.dataset.stage='lifting';el.setAttribute('role','status');
+  el.style.left=`${from.left}px`;el.style.top=`${from.top}px`;
+  el.style.width=`${from.width}px`;el.style.height=`${from.height}px`;
+  el.innerHTML=`<div class="draw-caption">正在抽牌</div><div class="draw-flipper"><div class="flip-inner">
+    <div class="flip-back"><div class="card card-back"></div></div>
+    <div class="flip-front">${playingCard(action.card,0,false)}</div></div></div>`;
   document.body.appendChild(el);
-  setTimeout(()=>el.remove(),800);
+  const source=app.querySelector(previous.myId===action.targetId
+    ? `.hand-scroll [data-own-card="${action.slot}"]`:`.target-list [data-slot="${action.slot}"]`);
+  source?.classList.add('draw-source');
+  const center=`translate(${dx}px,${dy}px) scale(1.22)`;
+  try {
+    await animateBox(el,[{transform:'translate(0,0)'},{transform:center}],duration*.12);
+    if(!alive())return;
+    el.dataset.stage='flipping';
+    await animateBox(el.querySelector('.flip-inner'),[{transform:'rotateY(0deg)'},{transform:'rotateY(180deg)'}],duration*.18);
+    if(!alive())return;
+    el.dataset.stage='revealed';
+    el.querySelector('.draw-caption').textContent=`抽到了${cardName(action.card)}`;
+    await pause(duration*.18);
+    if(!alive())return;
+    const destination=(next.myId===action.actorId?app.querySelector('.hand-scroll'):
+      [...app.querySelectorAll('[data-player-seat]')].find(node=>node.dataset.playerSeat===action.actorId))?.getBoundingClientRect();
+    const tx=destination?destination.left+destination.width/2-(from.left+from.width/2):dx;
+    const ty=destination?destination.top+destination.height/2-(from.top+from.height/2):dy;
+    el.dataset.stage='returning';
+    await animateBox(el,[{transform:center,opacity:1},{transform:`translate(${tx}px,${ty}px) scale(.85)`,opacity:.5}],duration*.22);
+    if(!alive())return;
+    el.remove();
+    state.view=drawArrivalView(effect);render();
+    app.querySelector(`.hand-scroll [data-card-id="${action.card.id}"]`)?.classList.add('drawn-card');
+    await pause(duration*.10);
+    if(!alive())return;
+    if(action.paired&&action.pair?.length===2)await playPairEffect(action.pair,duration*.20);
+    else await pause(duration*.20);
+  } finally {el.remove();}
+}
+async function playPairEffect(pair,duration) {
+  const el=document.createElement('div');
+  el.className='pair-effect';el.setAttribute('role','status');
+  el.innerHTML=`<strong>配对成功</strong><div class="pair-effect-cards">${pair.map(card=>playingCard(card,0,false)).join('')}</div>`;
+  document.body.appendChild(el);
+  pair.forEach(card=>app.querySelector(`.hand-scroll [data-card-id="${card.id}"]`)?.classList.add('pair-matching'));
+  try {
+    await animateBox(el,[{transform:'translate(-50%,-30%) scale(.8)',opacity:0},
+      {transform:'translate(-50%,-50%) scale(1.08)',opacity:1,offset:.3},
+      {transform:'translate(-50%,-90%) scale(.55)',opacity:0}],duration);
+  }finally{el.remove();}
 }
 function playShuffleEffect(action,view) {
   const own=action.playerId===view.myId;
@@ -434,9 +491,12 @@ function render() {
   updateCountdown();
 }
 function updateCountdown() {
+  if(state.waitingUntil&&Date.now()>=state.waitingUntil&&!state.effectActive) {
+    state.waitingUntil=0;render();return;
+  }
   document.querySelectorAll('.timer[data-deadline]').forEach(el=> {
     const deadline=Number(el.dataset.deadline);
-    el.textContent=deadline?`${Math.max(0,Math.ceil((deadline-Date.now())/1000))}s`:'--';
+    el.textContent=showingDraw()?'亮牌中':deadline?`${Math.max(0,Math.ceil((deadline-Date.now())/1000))}秒`:'--';
   });
 }
 async function sendAction(type,props={}) {
@@ -461,14 +521,13 @@ async function sendAction(type,props={}) {
 async function handleUi(type) {
   if(['quick','create','join'].includes(type)) {state.form=type;render();return;}
   if(type==='home') {if(state.session) return handleUi('leave');state.form='home';render();return;}
-  if(type==='help') {state.help=!state.help;render();return;}
   if(type==='copy') {
     try{await navigator.clipboard.writeText(state.session.code);notice('已复制房间号');}
     catch{notice(`房间号：${state.session.code}`);}return;
   }
   if(type==='leave') {
     if(state.session) {
-      if(!confirm('确定离开当前牌桌吗？游戏中离开将由 AI 托管。')) return;
+      if(!confirm('确定离开当前牌桌吗？游戏中离开将由电脑托管。')) return;
       try{await sendAction('leave');}catch{}
     }
     clearSession();state.form='home';render();return;
@@ -480,10 +539,12 @@ app.addEventListener('click',async event=> {
   if(button.hasAttribute('data-slot')) {
     if(!myTurn()) return;
     const slot=Number(button.dataset.slot);
-    if(state.view.targetSlots.length===1) {
-      state.busy=true;try{await sendAction('draw',{slot,turn:state.view.turn});}catch(e){notice(e.message);}finally{state.busy=false;}return;
-    }
-    state.selected=state.selected===slot?null:slot;render();return;
+    state.selected=state.selected===slot?null:slot;render();
+    state.busy=true;
+    try{await sendAction('select',{slot:state.selected,turn:state.view.turn});}
+    catch(e){notice(e.message);void fetchState();}
+    finally{state.busy=false;}
+    return;
   }
   if(button.dataset.api) {
     const type=button.dataset.api;
@@ -501,7 +562,7 @@ app.addEventListener('submit',async event=> {
   const data=Object.fromEntries(new FormData(form));localStorage.setItem('turtle-name',data.name);
   const type=form.dataset.form;
   const path=type==='quick'?'/api/quick':type==='create'?'/api/rooms':'/api/join';
-  if(type==='join') data.code=String(data.code).toUpperCase().trim();
+  if(type==='join') data.code=String(data.code).trim();
   if(type==='create') data.capacity=Number(data.capacity);
   state.busy=true;
   try {const session=await request(path,data);activeSession(session);}

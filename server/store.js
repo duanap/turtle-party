@@ -30,7 +30,7 @@ export function decodeRooms(contents) {
   if (snapshot?.format !== VERSION || !Array.isArray(snapshot.rooms)) throw new Error('房间快照格式不受支持');
   const rooms = new Map();
   for (const data of snapshot.rooms) {
-    if (!data || !/^[A-Z2-9]{6}$/.test(data.code) ||
+    if (!data || !/^(?:[0-9]{6}|[A-Z2-9]{6})$/.test(data.code) ||
       !Number.isInteger(data.capacity) || data.capacity < 2 || data.capacity > 6 ||
       !Array.isArray(data.players) || data.players.length < 1 || data.players.length > data.capacity ||
       !['lobby','playing','finished'].includes(data.phase) ||
@@ -59,7 +59,8 @@ export function decodeRooms(contents) {
     }
     const memory = new Map((data.memory || []).map(([id, entries]) => [id, new Map(entries)]));
     const room = {...data, memory, recentOps:new Map(data.recentOps || []),
-      clients:new Set(), disconnectTimers:new Map(), turnTimer:null, aiTimer:null};
+      clients:new Set(), disconnectTimers:new Map(), turnTimer:null, aiTimer:null,
+      selection:null, animationUntil:0};
     // A process restart drops sockets, not the room or credentials. Reconnecting
     // the original identity stops the temporary bot takeover.
     for (const player of room.players) if (!player.bot) player.autoplay = true;
