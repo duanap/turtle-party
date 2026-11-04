@@ -1,0 +1,44 @@
+# Install as /etc/systemd/system/chou-wugui.service
+# Create a dedicated user: useradd --system --shell /usr/sbin/nologin wugui
+# IMPORTANT: Verify ExecStart points to a Node.js >=20 binary usable by wugui.
+[Unit]
+Description=Chou Wugui Multiplayer Card Game
+After=network.target
+
+[Service]
+Type=simple
+User=wugui
+Group=wugui
+WorkingDirectory=/opt/chou-wugui
+ExecStart=/usr/bin/node /opt/chou-wugui/server/index.js
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=3000
+Environment=DATA_DIR=/var/lib/chou-wugui
+Environment=TRUST_PROXY=1
+Environment=MAX_ROOMS=300
+Environment=MAX_STREAMS=300
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=12
+KillSignal=SIGTERM
+UMask=0077
+StateDirectory=chou-wugui
+StateDirectoryMode=0700
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ReadWritePaths=/var/lib/chou-wugui
+MemoryMax=512M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

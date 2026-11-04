@@ -4,3 +4,11 @@
 node_modules/
 .DS_Store
 .env
+
+# Local credentials and development artifacts
+.env.*
+!.env.example
+.npmrc
+*.pem
+coverage/
+.idea/
