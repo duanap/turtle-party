@@ -172,7 +172,8 @@ async function modalAndLayoutChecks(browser){
    await host.waitForFunction(n=>document.querySelectorAll('.seat').length===n,i+1);
   }
   checks.push('手机竖屏及横屏：昵称/房间号标签与输入框同一行');
-  await host.locator('[data-api="start"]').click();for(const p of pages)await p.waitForSelector('.table');
+  await host.locator('[data-api="start"]').click();
+  for(const p of pages){await p.waitForSelector('.lobby-page',{state:'detached'});await p.waitForSelector('.deal-effect',{state:'detached'});}
   const byId=new Map();for(const p of pages)byId.set((await snapshot(p)).myId,p);
   let paired=false,unpaired=false,finished=false,moves=0;
   for(let n=0;n<45;n++){
