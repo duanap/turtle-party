@@ -11,8 +11,10 @@ async function snapshot(page){return page.evaluate
 async function screen(page,name){const file=path.join(output,name+'.png');await page.screenshot({path:file});screenshots.push(file);}
 async function noOverflow(page){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'horizontal overflow');}
 async function seatAspect(page){
- const ratios=await page.locator('.seat').evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return r.width/r.height}));
+ const ratios=await page.locator('.seat:not(.lobby-seat)').evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return r.width/r.height}));
  assert.ok(ratios.every(ratio=>Math.abs(ratio-580/180)<.025),'player frame stretched');
+ const plates=await page.locator('.lobby-nameplate .nameplate-art').evaluateAll(els=>els.map(el=>getComputedStyle(el).objectFit));
+ assert.ok(plates.every(fit=>fit==='contain'),'lobby nameplate stretched');
 }
 async function rowLayout(page){for(const field of await page.locator('.field').all()){const label=await field.locator('span').boundingBox(),input=await field.locator('input,select').boundingBox();assert.ok(Math.abs(label.y+label.height/2-input.y-input.height/2)<3,'field wrapped');}await noOverflow(page);}
 async function chineseInterface(page){return page.evaluate(()=>{
@@ -34,7 +36,7 @@ async function artworkAlignment(page){
   }
   for(const button of document.querySelectorAll('.btn')){
    const r=button.getBoundingClientRect(),label=button.querySelector('.button-content');if(!label)continue;
-   const t=label.getBoundingClientRect(),font=parseFloat(getComputedStyle(button).fontSize);
+   const t=label.getBoundingClientRect(),font=parseFloat(getComputedStyle(button).fontSize)*r.height/button.offsetHeight;
    if(Math.abs(t.x+t.width/2-r.x-r.width/2)>2||Math.abs(t.y+t.height/2-r.y-r.height*.47)>2)issues.push('button label off artwork');
    if(font>r.height*.48)issues.push('button font too large');
   }
@@ -49,6 +51,10 @@ async function modalAndLayoutChecks(browser){
  const background=await p.locator('.scene-room').elementHandle();
  for(const viewport of [{width:1440,height:900},{width:1280,height:720},{width:844,height:390},{width:740,height:360},{width:667,height:375},{width:390,height:844}]){
   await p.setViewportSize(viewport);await noOverflow(p);
+  if(viewport.width>=1101){
+   const separated=await p.evaluate(()=>document.querySelector('.home-entry').getBoundingClientRect().right<document.querySelector('.home-rules').getBoundingClientRect().left);
+   assert.equal(separated,true,'home controls overlap rules');
+  }
   assert.equal(await p.locator('.home-rules li').count(),5);
   for(const entry of ['quick','create','join']){
    await p.locator(`[data-ui="${entry}"]`).click();await rowLayout(p);await artworkAlignment(p);
@@ -99,19 +105,32 @@ async function modalAndLayoutChecks(browser){
   assert.equal(await p.locator('.lobby-page').count(),1);
   if(capacity===6){
    for(let i=0;i<5;i++){await p.locator('[data-api="add_bot"]').click();await p.waitForFunction(n=>document.querySelectorAll('.seat:not(.empty-seat)').length===n,i+2);}
+   for(const viewport of [{width:1672,height:941},{width:1440,height:900},{width:844,height:390},{width:740,height:360},{width:667,height:375},{width:390,height:844}]){
+    await p.setViewportSize(viewport);await wait(80);
+    const clipped=await p.locator('.lobby-room-code,.lobby-page [data-api="start"],.lobby-page [data-api="add_bot"],.lobby-page [data-ui="copy"]:not(.lobby-room-code),.lobby-player-name').evaluateAll(els=>els.filter(el=>{const r=el.getBoundingClientRect();return r.x<0||r.y<0||r.right>innerWidth+1||r.bottom>innerHeight+1}).map(el=>el.className));
+    assert.deepEqual(clipped,[],'lobby controls or names clipped');
+   }
+   await p.setViewportSize({width:1440,height:900});await wait(80);
    await screen(p,'immersive-lobby-six-desktop');
-   const before=await p.locator('.seat-ring .seat').evaluateAll(els=>els.map(el=>({id:el.dataset.playerSeat,x:el.getBoundingClientRect().x,y:el.getBoundingClientRect().y})));
+   const before=await p.locator('.seat').evaluateAll(els=>els.map(el=>el.dataset.playerSeat).sort());
    await p.locator('[data-api="start"]').click();await p.waitForSelector('.deal-effect');
    await p.waitForSelector('.deal-effect',{state:'detached'});
-   const after=await p.locator('.seat-ring .seat').evaluateAll(els=>els.map(el=>({id:el.dataset.playerSeat,x:el.getBoundingClientRect().x,y:el.getBoundingClientRect().y})));
+   const after=await p.locator('.seat').evaluateAll(els=>els.map(el=>el.dataset.playerSeat).sort());
    assert.deepEqual(before,after);
    for(const viewport of [{width:1440,height:900},{width:844,height:390},{width:740,height:360},{width:667,height:375},{width:390,height:844}]){
     await p.setViewportSize(viewport);await wait(80);await noOverflow(p);
     await p.waitForFunction(()=>!document.querySelector('.draw-effect,.pair-effect,.deal-effect'));
-    const sizes=await p.locator('.target-list .card').evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return{w:r.width,h:r.height}}));
-    assert.ok(sizes.every(r=>r.w>=44&&r.h>=44),'card touch target too small');
-    const targets=await p.locator('.target-list').boundingBox(),hand=await p.locator('.own-dock').boundingBox();
-    const draw=await p.locator('.draw-area').boundingBox(),table=await p.locator('.table').boundingBox();
+    const current=await snapshot(p);
+    if(current.phase==='finished'){
+     await wait(Math.max(0,(current.animationUntil||0)-Date.now())+50);
+     await p.locator('[data-api="rematch"]').click();await p.waitForSelector('.deal-effect');await p.waitForSelector('.deal-effect',{state:'detached'});
+    }
+    // Read one DOM revision atomically; SSE can replace nodes between protocol calls.
+    const {sizes,targets,hand,draw,table}=await p.evaluate(()=>{
+     const box=selector=>{const e=document.querySelector(selector);if(!e)return null;const r=e.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height}};
+     return {sizes:[...document.querySelectorAll('.target-list .card')].map(e=>{const r=e.getBoundingClientRect();return{w:r.width,h:r.height}}),targets:box('.target-list'),hand:box('.own-dock'),draw:box('.draw-area'),table:box('.table')};
+    });
+    assert.ok(sizes.length>0&&sizes.every(r=>r.w>=44&&r.h>=44),'card touch target missing or too small');
     assert.ok(Math.abs(draw.x+draw.width/2-table.x-table.width/2)<1,'draw area is not centered');
     assert.ok(Math.abs(targets.x+targets.width/2-table.x-table.width/2)<1,'target cards are not centered');
     await seatAspect(p);
@@ -122,7 +141,7 @@ async function modalAndLayoutChecks(browser){
   await p.locator('[data-ui="leave"]').click();
   await p.locator('[data-ui="confirm-leave"]').click();await p.waitForSelector('.home-page');
  }
- checks.push('二至六人座位、同场景洗牌发牌、开局座位稳定、三种小横屏牌面不小于四十四像素');
+ checks.push('二至六人座位、同场景洗牌发牌、开局成员保留、三种小横屏牌面不小于四十四像素');
  checks.push('空位隐藏、玩家框等比显示、抽牌区域水平居中、音效默认开启且记住关闭偏好');
  checks.push('快速开始、创建、加入、设置、玩法及退出弹窗标题和按钮均位于 PNG 的实际安全区域');
  await c.close();

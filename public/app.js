@@ -305,11 +305,16 @@ function avatar(player,large=false) {
   const index=[...(player?.id||'home')].reduce((sum,c)=>sum+c.charCodeAt(0),0)%names.length;
   return `<span class="avatar ${large?'avatar-large':''}" aria-hidden="true"><img src="/assets/avatars/${names[index]}_round.png" alt=""></span>`;
 }
+const atlasRegions={crest:[30,0,500,258],status:[447,276,510,153],gold:[968,282,462,130],nameplate:[32,270,385,165],wood:[1112,54,322,96],cards:[840,601,217,218],turtle:[826,441,193,125],cup:[1055,555,191,253]};
+function atlas(name,extra='') {
+  const [x,y,w,h]=atlasRegions[name];
+  return `<span class="atlas-art ${extra}" data-art="${name}" aria-hidden="true" style="--art-ratio:${w}/${h}"><img src="/assets/reference-kit/ui-atlas.png" alt="" style="width:${1448/w*100}%;height:${1086/h*100}%;left:${-x/w*100}%;top:${-y/h*100}%"></span>`;
+}
 function brand(large=false) {
-  return `<div class="${large?'brand-emblem':'brand brand-mini'}">${large?'<h1 class="sr-only">龟牌派对</h1>':''}<img src="/assets/branding/turtle_party_logo.png" alt="${large?'':'龟牌派对'}"></div>`;
+  return `<div class="${large?'brand-emblem':'brand brand-mini'}">${atlas('crest')}<${large?'h1':'span'} class="brand-title">龟牌派对</${large?'h1':'span'}></div>`;
 }
 function sceneFrame() {
-  return `<div class="scene-shell" data-mode="home"><div class="scene-room" aria-hidden="true"><img src="/assets/tables/room_window_scenery.png" alt=""></div><div class="scene-table" aria-hidden="true"><img src="/assets/tables/table_felt_wood_compact.png" alt=""></div><div class="scene-props" aria-hidden="true"><img class="scene-mascot mascot-happy" src="/assets/mascots/turtle_happy.png" alt=""><img class="scene-mascot mascot-thinking" src="/assets/mascots/turtle_thinking.png" alt=""></div><div class="scene-content"></div><div class="dialog-host"></div></div>`;
+  return `<div class="scene-shell" data-mode="home"><div class="scene-room" aria-hidden="true"><img src="/assets/reference-kit/room-scene.png" alt=""></div><div class="scene-content"></div><div class="dialog-host"></div></div>`;
 }
 function tableToolbar(v) {
   const actor=v.players.find(p=>p.id===v.currentPlayerId);
@@ -351,13 +356,20 @@ function tableSeats(v,lobby=false) {
   }).join('')}</div>`;
 }
 function roomView(v) {
-  const me=v.players.find(p=>p.id===v.myId);
-  return `<div class="game-page lobby-page">${tableToolbar(v)}<main class="game-layout"><section class="table lobby-table" aria-label="等待中的好友牌桌">${tableSeats(v,true)}
-    <div class="waiting-center"><div class="waiting-heading"><h1 class="hanging-sign">等待朋友上桌</h1><p class="waiting-note">房间已准备好，分享号码就能加入</p></div><div class="deck-stack" aria-hidden="true"><i></i><i></i><i></i></div>
+  return `<div class="game-page lobby-page"><div class="reference-stage"><header class="lobby-header"><div class="lobby-room-plaque">${atlas('crest')}<button class="lobby-room-code room-copy" data-ui="copy" title="复制房间号"><span>房间号</span><strong>${h(v.code)}</strong>${icon('copy')}</button></div><div class="lobby-waiting-sign">${atlas('status')}<h1>等待玩家加入…</h1></div></header><main class="game-layout"><section class="table lobby-table" aria-label="等待中的好友牌桌">${lobbySeats(v)}
+    <div class="waiting-center"><div class="lobby-decor-deck" aria-hidden="true">${atlas('cards')}</div><div class="lobby-cup cup-left" aria-hidden="true">${atlas('cup')}</div><div class="lobby-cup cup-right" aria-hidden="true">${atlas('cup')}</div>
     <div class="room-actions">${isHost()?`<button class="btn btn-cream" data-api="add_bot" ${v.players.length>=v.capacity?'disabled':''}>${icon('robot')}添加电脑</button>`:''}<button class="btn btn-cream" data-ui="copy">${icon('people')}邀请好友</button></div>
-    ${isHost()?`<button class="btn btn-primary start-button" data-api="start" ${v.players.length<2?'disabled':''}>开始游戏</button>`:'<p class="waiting-owner">等房主开始，先坐一会儿。</p>'}</div>
+    ${isHost()?`<button class="btn btn-primary start-button" data-api="start" ${v.players.length<2?'disabled':''}>${atlas('gold','button-art')}开始游戏</button>`:'<p class="waiting-owner">等房主开始，先坐一会儿。</p>'}</div>
     <div class="table-bottom"><span class="stat-chip">已入座 <strong>${v.players.length} / ${v.capacity}</strong></span><span class="lobby-hint">至少两人，即可开局</span></div></section>
-    <section class="own-dock lobby-dock">${seat(me,v,true,'','own-seat')}<span class="own-welcome">你的座位已留好</span></section></main></div>`;
+    </main></div><div class="lobby-tools"><span class="connection-tag" id="connection-tag" data-status="${state.network}">${connectionLabel()}</span><button class="round-button" data-ui="rules" aria-label="玩法说明">${icon('help')}</button><button class="round-button" data-ui="settings" aria-label="游戏设置">${icon('settings')}</button><button class="round-button" data-ui="leave" aria-label="离开牌桌">${icon('door')}</button></div><div class="network-banner" id="network-banner" role="status" ${['connected','idle'].includes(state.network)?'hidden':''}>连接不稳定，正在恢复牌桌。</div></div>`;
+}
+function lobbySeats(v) {
+  const positions=[[26,47],[76,47],[50,43],[11,73],[89,73],[76,91]];
+  return `<div class="seat-ring lobby-seats ${v.players.length>2?'many-players':''}" data-capacity="${v.capacity}">${Array.from({length:v.capacity},(_,index)=>{
+    const p=v.players[index];if(!p)return '<span class="seat-slot" hidden aria-hidden="true"></span>';
+    const [x,y]=positions[index];
+    return `<article class="seat lobby-seat ${index<2?'portrait-seat':'compact-seat'}" data-player-seat="${h(p.id)}" style="--seat-x:${x}%;--seat-y:${y}%">${index<2?`<img class="seated-character" src="/assets/reference-kit/seated-${index%2?'boy':'girl'}.png" alt="">`:''}<div class="compact-portrait">${avatar(p,true)}</div><div class="lobby-nameplate"><img class="nameplate-art" src="/assets/buttons/button_cream_clean.png" alt=""><span class="avatar" aria-hidden="true"><img src="/assets/avatars/turtle_round.png" alt=""></span><div class="lobby-player-name"><strong title="${h(p.name)}">${h(p.name)}</strong><span>${p.owner?'房主':p.bot?'电脑玩家':'已入座'}</span></div></div>${isHost()&&p.bot?`<button class="remove-bot" data-api="remove_bot" data-id="${h(p.id)}" aria-label="移除${h(p.name)}">${icon('close')}</button>`:''}</article>`;
+  }).join('')}</div>`;
 }
 function playingCard(card,idx,own=true) {
   const red=['H','D'].includes(card.suit);
@@ -583,6 +595,11 @@ function sizeArtPanel(panel) {
 }
 const panelObserver=typeof ResizeObserver==='function'?new ResizeObserver(entries=>entries.forEach(entry=>sizeArtPanel(entry.target))):null;
 function updateArtwork() {
+  const stage=app.querySelector('.reference-stage');
+  if(stage){
+    const parent=stage.parentElement.getBoundingClientRect();
+    stage.style.setProperty('--reference-scale',Math.max(parent.width/1672,parent.height/941));
+  }
   for(const panel of observedPanels)if(!panel.isConnected){panelObserver?.unobserve(panel);observedPanels.delete(panel);}
   app.querySelectorAll('.art-panel').forEach(panel=>{
     sizeArtPanel(panel);
@@ -591,7 +608,10 @@ function updateArtwork() {
   app.querySelectorAll('.btn').forEach(button=>{
     if(button.querySelector('.button-content'))return;
     const face=document.createElement('span');face.className='button-content';
-    while(button.firstChild)face.appendChild(button.firstChild);
+    for(const child of [...button.childNodes]){
+      if(child.nodeType===1&&child.classList.contains('button-art'))continue;
+      face.appendChild(child);
+    }
     button.appendChild(face);
   });
 }

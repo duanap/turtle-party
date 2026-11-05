@@ -9,7 +9,7 @@ h1,h2,h3,p{ margin-top:0 }
 #app{ min-height:100svh }
 .icon{ width:24px; height:24px; flex:none; vertical-align:middle }
 .scene-shell{ position:relative; height:100svh; min-height:640px; overflow:hidden; isolation:isolate; background:#4e331f }
-.scene-room{ position:absolute; inset:0; z-index:-3; }
+
 .scene-content{ position:relative; height:100%; z-index:3 }
 .scene-table{ position:absolute; inset:29% 1.5% .7%; z-index:-1; }
 .scene-props{ position:absolute; inset:0; pointer-events:none; z-index:1 }
@@ -25,24 +25,9 @@ h1,h2,h3,p{ margin-top:0 }
 .home-entry{ display:flex; flex-direction:column; align-items:center; margin-top:-3vh; min-width:0 }
 .home-tagline{ color:#fff2c7; text-shadow:0 2px 4px #2c2b16; font-size:14px; margin:17px 0 23px; text-align:center; letter-spacing:.05em }
 
-
-
-
-
-
-
-
-
 .round-button{ display:inline-grid; place-items:center; width:45px; height:45px; flex:none; padding:8px; color:#613716; }
 
 .round-button .icon{ width:23px; height:23px }
-
-
-
-
-
-
-
 
 .rule-symbol{ display:grid; place-items:center; color:#ae6337; font-size:36px }
 .rule-symbol .icon{ width:34px; height:34px }
@@ -52,43 +37,11 @@ h1,h2,h3,p{ margin-top:0 }
 .game-page{ position:relative; height:100%; overflow:hidden }
 .game-topbar{ position:absolute; inset:9px 2.4% auto; display:flex; align-items:center; justify-content:space-between; gap:20px; z-index:12; height:80px }
 
-
-
-
-
-
-
 .top-actions{ display:flex; gap:10px }
-
-
-
-
 
 .game-layout{ position:absolute; inset:0 }
 .table{ position:absolute; inset:12% 3% 24%; isolation:isolate }
 .seat-ring{ position:absolute; inset:0; pointer-events:none; z-index:5 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .deck-stack{ position:relative; width:75px; height:92px; color:#f6d5a6; display:grid; place-items:center; flex:none }
 .deck-stack i{ position:absolute; inset:0; transform:rotate(-8deg) }
@@ -103,11 +56,6 @@ h1,h2,h3,p{ margin-top:0 }
 .stat-chip strong{ font-size:14px; color:#fff4cd }
 .lobby-hint{ font-size:12px; color:#ded8ad }
 .own-dock{ position:absolute; left:5%; right:5%; bottom:2.3%; height:22%; max-height:185px; display:grid; grid-template-columns:125px minmax(0,1fr) 110px; gap:18px; align-items:end; z-index:9 }
-
-
-
-
-
 
 .hand-area{ min-width:0; align-self:end }
 .dock-top{ display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:2px; color:#ffe2a9; font-size:12px; text-shadow:0 2px 2px #133b29 }
@@ -158,32 +106,7 @@ h1,h2,h3,p{ margin-top:0 }
 
 .modal-backdrop{ position:absolute; inset:0; border:0; background:#2f1e11a8; backdrop-filter:blur(4px); cursor:default }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .finish-layer{ position:fixed; inset:0; background:#23341cb0; backdrop-filter:blur(4px); display:grid; place-items:center; z-index:70; padding:20px }
-
-
-
-
-
-
-
-
-
 
 .network-banner{ position:absolute; top:99px; left:50%; transform:translateX(-50%); z-index:60; width:max-content; max-width:94%; text-align:center; color:#915a26; padding:8px 16px; font-size:12px; }
 .network-banner[hidden]{ display:none }
@@ -232,8 +155,8 @@ h1,h2,h3,p{ margin-top:0 }
 html,body{ overflow-x:clip; }
 /* Supplied transparent PNGs are the artwork;
 these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
-.scene-room{ inset:0 0 auto; height:45%; background:none }
-.scene-room>img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block }
+
+
 .scene-table{ border:0; border-radius:0; background:none; box-shadow:none }
 .scene-table>img{ display:block; width:100%; height:100%; object-fit:fill; pointer-events:none }
 .scene-mascot{ position:absolute; width:110px; height:auto; object-fit:contain }
@@ -246,40 +169,8 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 .avatar{ border:0; background:none; box-shadow:none; border-radius:0; overflow:visible }
 .avatar>img{ display:block; width:100%; height:100%; object-fit:contain }
 
-
-
-
-
 .round-button{ border:0; background:none; border-radius:0; box-shadow:none; padding:0 }
 .round-button>.icon-art{ width:100%; height:100%; object-fit:contain }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .own-dock{ grid-template-columns:170px minmax(0,1fr) 110px }
 
@@ -295,8 +186,6 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 .discard-zone{ border:0; background:none }
 .discard-label{ padding:8px 20px }
 .draw-caption{ padding:9px 19px }
-
-
 
 .pair-effect:before{ content:""; position:absolute; inset:-40px -75px -30px; z-index:-1; opacity:.7; background:url('/assets/effects/gold_sparkles.png') center/contain no-repeat }
 .network-banner{ border:0; background:url('/assets/buttons/button_cream_clean.png') center/100% 100% no-repeat; box-shadow:none; border-radius:0; padding:10px 25px }
@@ -401,3 +290,88 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 .reveal-label{margin-bottom:7px;color:#86613e;font-size:12px}
 .reveal-cards .card{--card-w:70px}
 .result-players{color:#86613e;font-size:13px;line-height:1.5}
+
+/* The supplied empty scene is a background plate, not a flattened game interface. */
+.scene-room{position:absolute;inset:0;z-index:-3;overflow:hidden;background:#462e1d}
+.scene-room>img{position:absolute;left:-5%;top:-10%;width:110%;height:110%;object-fit:cover;object-position:center;display:block}
+.scene-shell[data-mode="playing"] .scene-room>img{left:-15%;top:-28%;width:130%;height:130%}
+.atlas-art{position:relative;display:block;overflow:hidden;aspect-ratio:var(--art-ratio);pointer-events:none;flex:none}
+.atlas-art>img{position:absolute;max-width:none;object-fit:fill;pointer-events:none}
+.brand-emblem>.atlas-art,.brand-mini>.atlas-art{position:absolute;inset:0;width:100%;height:100%}
+.brand-title{position:absolute;left:12%;right:12%;top:53%;height:34%;display:flex;align-items:center;justify-content:center;margin:0;padding:0;color:#ffe9a7;font-size:70px;font-weight:1000;line-height:1;white-space:nowrap;letter-spacing:.025em;text-shadow:0 3px 0 #af662d,0 5px 0 #5f301a}
+.brand-mini .brand-title{font-size:22px;letter-spacing:0;text-shadow:0 1px 0 #a9622f,0 2px 0 #552d18}
+.reference-stage{position:absolute;width:1672px;height:941px;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--reference-scale,1));transform-origin:center}
+.lobby-header{position:absolute;left:0;right:0;top:0;height:315px;z-index:12;pointer-events:none}
+.lobby-room-plaque{position:absolute;top:-13px;left:50%;transform:translateX(-50%);width:570px;height:294px;pointer-events:auto}
+.lobby-room-plaque>.atlas-art{position:absolute;inset:0;width:100%;height:100%}
+.lobby-room-code{position:absolute;left:15%;right:15%;top:54%;height:29%;display:flex;align-items:center;justify-content:center;gap:18px;width:auto;max-width:none;padding:0 3px 5px;border:0;background:none;color:#ffecc8;white-space:nowrap;font-weight:800;line-height:1}
+.lobby-room-code>span{font-size:31px}.lobby-room-code>strong{font-size:42px;letter-spacing:.09em}.lobby-room-code>.icon{width:33px;height:33px}
+.lobby-waiting-sign{position:absolute;left:50%;top:243px;transform:translateX(-50%);width:405px;height:104px}
+.lobby-waiting-sign>.atlas-art{position:absolute;inset:0;width:100%;height:100%}
+.lobby-waiting-sign h1{position:absolute;inset:17% 17% 25%;display:flex;align-items:center;justify-content:center;margin:0;color:#5a2c0c;font-size:28px;font-weight:900;line-height:1.1;white-space:nowrap}
+.lobby-table{inset:0}
+.lobby-table .waiting-center{left:50%;top:0;bottom:0;width:100%;transform:translateX(-50%);display:block;pointer-events:none}
+.lobby-decor-deck{position:absolute;left:50%;top:430px;transform:translateX(-50%) rotate(-9deg);width:180px;height:180px}
+.lobby-decor-deck>.atlas-art{width:100%;height:100%}
+.lobby-table .room-actions{position:absolute;left:0;right:0;top:585px;gap:54px;pointer-events:auto}
+.lobby-table .room-actions .btn{--control-h:88px;--control-font:29px;min-width:290px;width:290px}
+.lobby-table .room-actions .icon{width:36px;height:36px}
+.lobby-table .start-button{position:absolute;top:692px;left:50%;transform:translateX(-50%);width:500px;height:143px;min-height:143px;min-width:0;background:none;--control-font:47px;pointer-events:auto}
+.lobby-table .start-button:hover:not(:disabled){transform:translateX(-50%) translateY(-2px)}
+.lobby-table .start-button .button-content{inset:20% 22% 24%;gap:0}
+.lobby-table .start-button>.button-art{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.lobby-table .waiting-owner{position:absolute;top:707px;left:0;right:0;text-align:center;font-size:23px;color:#fff0c8}
+.lobby-table .table-bottom{left:15%;right:15%;bottom:45px}
+.lobby-tools{position:absolute;right:24px;top:20px;display:flex;align-items:center;gap:12px;z-index:20}
+.lobby-tools .connection-tag{padding:7px 12px;border-radius:22px;background:#47281280;color:#fff0c9}
+.lobby-table .lobby-seat{position:absolute;left:var(--seat-x);top:var(--seat-y);transform:translate(-50%,-100%);width:330px;height:300px;min-height:0;aspect-ratio:auto;background:none;padding:0;pointer-events:none}
+.lobby-table .lobby-seat .seated-character{position:absolute;left:50%;bottom:49px;transform:translateX(-50%);width:330px;height:310px;object-fit:contain;pointer-events:none}
+.lobby-nameplate{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:252px;height:108px}
+.lobby-nameplate>.atlas-art{position:absolute;inset:0;width:100%;height:100%}
+.lobby-nameplate>.avatar{position:absolute;left:1%;top:3%;width:34%;height:79%;background:none;box-shadow:none}
+.lobby-player-name{position:absolute;left:37%;right:6%;top:23%;bottom:13%;display:flex;flex-direction:column;align-items:center;justify-content:space-around;gap:2px}
+.lobby-player-name>strong{font-size:24px;line-height:1.15;color:#fff0cf;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lobby-player-name>span{font-size:16px;line-height:1.15;color:#653a1d}
+.lobby-table .compact-seat{width:230px;height:185px}
+.compact-seat .lobby-nameplate{width:210px;height:90px}
+.compact-portrait{position:absolute;bottom:69px;left:50%;transform:translateX(-50%);height:97px;width:97px}
+.compact-portrait>.avatar{width:100%;height:100%}
+.compact-seat .lobby-player-name>strong{font-size:20px}.compact-seat .lobby-player-name>span{font-size:14px}
+.lobby-seat .remove-bot{right:20px;top:auto;bottom:79px;pointer-events:auto;width:32px;height:32px}
+.lobby-table .compact-seat .remove-bot{right:0;bottom:65px}
+.lobby-table .stat-chip{font-size:15px}.lobby-table .stat-chip>strong{font-size:19px}.lobby-table .lobby-hint{font-size:15px;color:#f5dfb6}
+
+.reference-stage .lobby-table{inset:0}
+.lobby-header .lobby-room-code>span{font-size:31px}.lobby-header .lobby-room-code>strong{font-size:42px}.lobby-header .lobby-room-code>.icon{width:33px;height:33px}
+.lobby-room-plaque{top:-8px;width:540px;height:278px}.lobby-room-code{top:48%}
+.lobby-waiting-sign{top:212px;height:100px}
+.lobby-table .lobby-seat .seated-character{bottom:0}
+.portrait-seat>.compact-portrait{display:none}
+.lobby-nameplate{width:240px;height:80px}
+.nameplate-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.lobby-nameplate>.avatar{left:-2%;top:4%;width:29%;height:85%}
+.lobby-player-name{left:29%;right:7%;top:18%;bottom:25%;justify-content:center}
+.lobby-player-name>strong{color:#5e2d0c;font-size:25px}
+.lobby-player-name>span{position:absolute;top:calc(100% + 12px);font-size:13px;color:#f7e6c6;text-shadow:0 1px 3px #40250d}
+.compact-seat .lobby-nameplate{width:210px;height:70px}.compact-seat .lobby-player-name>strong{font-size:21px}.compact-seat .lobby-player-name>span{font-size:12px}
+.lobby-seat .remove-bot{bottom:55px;right:20px}.lobby-table .compact-seat .remove-bot{bottom:46px}
+.lobby-seats>.lobby-seat:nth-child(6) .compact-portrait{display:none}
+.lobby-decor-deck{top:411px;width:150px;height:150px}
+.lobby-table .start-button{top:676px;width:490px;height:128px;min-height:128px}
+.lobby-cup{position:absolute;top:300px;width:100px;height:133px}.lobby-cup>.atlas-art{width:100%;height:100%}.cup-left{left:548px}.cup-right{left:1056px}
+
+.nameplate-art{object-fit:contain;}
+.lobby-table .table-bottom{bottom:90px;}
+
+@media(min-width:1101px){
+ .home-stage{display:block;padding:0}
+ .home-entry{position:absolute;left:49%;top:3%;transform:translateX(-50%);width:min(680px,41vw);margin:0}
+ .home-entry .brand-emblem{width:100%;height:auto;aspect-ratio:500/258}
+ .home-entry .brand-title{font-size:clamp(56px,5.5vw,92px)}
+ .home-tagline{font-size:14px;margin:12px 0 18px}
+ .home-entry .hero-buttons{gap:10px}
+ .home-entry .hero-buttons .btn{--control-h:clamp(68px,5.98vw,100px);--control-font:clamp(22px,1.91vw,32px);width:clamp(320px,26.3vw,440px)}
+ .home-entry .hero-buttons .btn-primary{--control-h:clamp(78px,7.5vw,125px);--control-font:clamp(28px,2.4vw,40px);width:clamp(360px,28.7vw,480px)}
+ .home-entry .hero-buttons .icon{width:34px;height:34px}
+ .home-rules{position:absolute;left:73%;top:18%;width:25%;max-width:430px;margin:0}
+}

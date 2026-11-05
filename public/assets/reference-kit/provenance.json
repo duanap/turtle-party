@@ -1,0 +1,21 @@
+{
+  "scene": {
+    "file": "room-scene.png",
+    "source": "ChatGPT 图像 2026年11月4日 23_39_21.png",
+    "unchanged": true
+  },
+  "atlas": {
+    "file": "ui-atlas.png",
+    "source": "ChatGPT 图像 2026年11月4日 23_39_30.png",
+    "unchanged": true
+  },
+  "characters": {
+    "tool": "image_gen built-in",
+    "reference": "ChatGPT 图像 2026年11月4日 15_20_49.png",
+    "output": "720x480 transparent PNG",
+    "prompts": {
+      "girl": "Create an isolated transparent PNG cutout of ONLY the seated cheerful girl and her wooden chair from the LEFT occupied seat in this reference. Faithfully match this exact cozy hand-painted casual board-game character: brown hair in a loose bun with a small cream flower, round smiling face with closed happy eyes and rosy cheeks, pale warm yellow hoodie, elbows resting forward and both hands supporting her chin, glossy curved wooden chair back behind her. Include her upper torso and chair back, ending naturally just below the elbows where a tabletop would occlude her. FRONT VIEW with slight three-quarter turn toward table center, same viewpoint as reference. Do not include table, cups, nameplate, symbols, words, cards, other people, room or background. Keep hands, sleeves and chair silhouette intact. Transparent alpha all around, generous clear margins. No opaque rectangle or baked background. High fidelity to the reference girl's identity, proportions, color and painterly detail, output one portrait game asset.",
+      "boy": "Create an isolated transparent PNG cutout of ONLY the seated cheerful boy and his wooden chair from the RIGHT occupied seat in this reference. Faithfully match this exact cozy hand-painted casual board-game character: tousled dark brown hair, round smiling face with closed happy eyes and rosy cheeks, muted forest-green hoodie with cream drawstrings, one elbow resting forward and hand supporting his cheek, glossy curved wooden chair back behind him. Include his upper torso and chair back, ending naturally just below the elbows where a tabletop would occlude him. FRONT VIEW with slight three-quarter turn toward table center, same viewpoint as reference. Do not include table, cups, nameplate, symbols, words, cards, other people, room or background. Keep hands, sleeves and chair silhouette intact. Transparent alpha all around, generous clear margins. No opaque rectangle or baked background. High fidelity to the reference boy's identity, proportions, color and painterly detail, output one portrait game asset."
+    }
+  }
+}

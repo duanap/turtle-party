@@ -6,8 +6,8 @@
 
 | 界面元素 | 素材 | 动态内容 |
 | --- | --- | --- |
-| 房间窗景与主牌桌 | tables/room_window_scenery.png、table_felt_wood_compact.png | 可适配尺寸的前景布局 |
-| 游戏标志 | branding/turtle_party_logo.png | 语义标题与可访问名称 |
+| 房间窗景与主牌桌 | reference-kit/room-scene.png | 可适配尺寸的前景布局 |
+| 游戏标志 | reference-kit/ui-atlas.png 的空白徽标部件 | 语义标题与可访问名称 |
 | 玩家头像 | avatars 下的独立圆形头像 PNG | 按玩家标识稳定选择 |
 | 座位状态 | players/player_card_blank_default、active、target、escaped.png | 昵称、牌数、行动/托管状态 |
 | 按钮 | buttons/button_gold_clean.png、button_cream_clean.png | HTML 按钮文案与真实事件 |
@@ -43,3 +43,7 @@ Precise edit of this transparent PNG button asset. Remove ONLY the extra thin cu
 ```text
 Precise edit of this transparent PNG button asset. Remove ONLY the extra thin curved elliptical white highlight line across the upper interior of the button. Seamlessly fill that line with the surrounding pale warm cream button face. Keep the existing outer border, rounded capsule silhouette, colors, subtle vertical shading, shadow, exact position on the canvas, and transparent alpha margins unchanged. No new outlines, no inner ellipses, no curved highlight strokes, no text, no icons. This is a blank UI button texture; preserve its 440 by 140 landscape canvas and original proportions. Do not redesign the button or add content. Output a transparent PNG.
 ```
+
+## 完整场景构图校准
+
+现使用用户新提供的无字完整房间底图和透明组件图，原样放在 reference-kit 下。房间号牌匾、等待标牌、主按钮、纸牌装饰及杯子按图集区域显示，真实文字独立叠加。缺少的坐姿人物层通过内置 image_gen 补齐为独立透明 PNG，详情和最终提示词见 [场景素材说明](reference-kit/README.md)。原 95 个压缩包文件继续保留。
