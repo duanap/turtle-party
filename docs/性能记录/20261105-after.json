@@ -1,0 +1,244 @@
+[
+  {
+    "phase": "cold",
+    "elapsed": 2545,
+    "lcp": 1884,
+    "resources": [
+      {
+        "name": "/assets/reference-kit/room-scene.f0292e9e6e2e.webp",
+        "transfer": 192456,
+        "body": 192156,
+        "duration": 564
+      },
+      {
+        "name": "/style.css",
+        "transfer": 8864,
+        "body": 8564,
+        "duration": 259
+      },
+      {
+        "name": "/mobile.css",
+        "transfer": 5067,
+        "body": 4767,
+        "duration": 244
+      },
+      {
+        "name": "/app.js",
+        "transfer": 18881,
+        "body": 18581,
+        "duration": 305
+      },
+      {
+        "name": "/assets/icons/settings.5ce0e838d6bb.webp",
+        "transfer": 2670,
+        "body": 2370,
+        "duration": 135
+      },
+      {
+        "name": "/assets/reference-kit/sprite-crest.99a3c63c3f23.webp",
+        "transfer": 46486,
+        "body": 46186,
+        "duration": 1191
+      },
+      {
+        "name": "/assets/icons/leave.3c51cfb574ba.webp",
+        "transfer": 2360,
+        "body": 2060,
+        "duration": 135
+      },
+      {
+        "name": "/assets/rules-popup/assets/panel/popup_panel_blank.5de16ceaceda.webp",
+        "transfer": 19540,
+        "body": 19240,
+        "duration": 1254
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/leaf_left.ed5cc91174c9.webp",
+        "transfer": 5680,
+        "body": 5380,
+        "duration": 1269
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule01_remove_one_card.527e04b45cb3.webp",
+        "transfer": 13770,
+        "body": 13470,
+        "duration": 385
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/leaf_right.71198cd52440.webp",
+        "transfer": 5456,
+        "body": 5156,
+        "duration": 1143
+      },
+      {
+        "name": "/assets/rules-popup/assets/header/header_title_blank.f25024ff63d8.webp",
+        "transfer": 9382,
+        "body": 9082,
+        "duration": 1214
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule03_draw_card.6ea945a2c773.webp",
+        "transfer": 11860,
+        "body": 11560,
+        "duration": 970
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule04_sleepy_turtle.96c9280d8d92.webp",
+        "transfer": 14162,
+        "body": 13862,
+        "duration": 1035
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule02_match_pairs.eddf815daa23.webp",
+        "transfer": 11228,
+        "body": 10928,
+        "duration": 1239
+      },
+      {
+        "name": "/assets/buttons/button_gold_clean.733350db8bc3.webp",
+        "transfer": 12056,
+        "body": 11756,
+        "duration": 1054
+      },
+      {
+        "name": "/assets/buttons/button_cream_clean.34860b73cb6c.webp",
+        "transfer": 12116,
+        "body": 11816,
+        "duration": 1206
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/divider_line.2f4b4784790e.webp",
+        "transfer": 2182,
+        "body": 1882,
+        "duration": 200
+      }
+    ],
+    "navigation": [
+      {
+        "load": 1885.3000000715256,
+        "dom": 615.3000000715256
+      }
+    ]
+  },
+  {
+    "phase": "warm",
+    "elapsed": 913,
+    "lcp": 304,
+    "resources": [
+      {
+        "name": "/assets/reference-kit/room-scene.f0292e9e6e2e.webp",
+        "transfer": 0,
+        "body": 192156,
+        "duration": 0
+      },
+      {
+        "name": "/style.css",
+        "transfer": 300,
+        "body": 0,
+        "duration": 114
+      },
+      {
+        "name": "/mobile.css",
+        "transfer": 300,
+        "body": 0,
+        "duration": 113
+      },
+      {
+        "name": "/app.js",
+        "transfer": 300,
+        "body": 0,
+        "duration": 113
+      },
+      {
+        "name": "/assets/icons/settings.5ce0e838d6bb.webp",
+        "transfer": 0,
+        "body": 2370,
+        "duration": 0
+      },
+      {
+        "name": "/assets/reference-kit/sprite-crest.99a3c63c3f23.webp",
+        "transfer": 0,
+        "body": 46186,
+        "duration": 0
+      },
+      {
+        "name": "/assets/icons/leave.3c51cfb574ba.webp",
+        "transfer": 0,
+        "body": 2060,
+        "duration": 0
+      },
+      {
+        "name": "/assets/rules-popup/assets/panel/popup_panel_blank.5de16ceaceda.webp",
+        "transfer": 0,
+        "body": 19240,
+        "duration": 0
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/leaf_left.ed5cc91174c9.webp",
+        "transfer": 0,
+        "body": 5380,
+        "duration": 0
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/leaf_right.71198cd52440.webp",
+        "transfer": 0,
+        "body": 5156,
+        "duration": 0
+      },
+      {
+        "name": "/assets/rules-popup/assets/header/header_title_blank.f25024ff63d8.webp",
+        "transfer": 0,
+        "body": 9082,
+        "duration": 0
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule01_remove_one_card.527e04b45cb3.webp",
+        "transfer": 0,
+        "body": 13470,
+        "duration": 0
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule02_match_pairs.eddf815daa23.webp",
+        "transfer": 0,
+        "body": 10928,
+        "duration": 0
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule03_draw_card.6ea945a2c773.webp",
+        "transfer": 0,
+        "body": 11560,
+        "duration": 0
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule04_sleepy_turtle.96c9280d8d92.webp",
+        "transfer": 0,
+        "body": 13862,
+        "duration": 0
+      },
+      {
+        "name": "/assets/buttons/button_gold_clean.733350db8bc3.webp",
+        "transfer": 0,
+        "body": 11756,
+        "duration": 0
+      },
+      {
+        "name": "/assets/buttons/button_cream_clean.34860b73cb6c.webp",
+        "transfer": 0,
+        "body": 11816,
+        "duration": 0
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/divider_line.2f4b4784790e.webp",
+        "transfer": 0,
+        "body": 1882,
+        "duration": 0
+      }
+    ],
+    "navigation": [
+      {
+        "load": 259.39999997615814,
+        "dom": 254.60000002384186
+      }
+    ]
+  }
+]

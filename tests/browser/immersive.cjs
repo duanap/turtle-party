@@ -199,9 +199,22 @@ async function modalAndLayoutChecks(browser){
    await wait(160);const lifted=await target.locator(`[data-own-card="${slot}"]`).boundingBox();assert.ok(before.y-lifted.y>=12,'target card not lifted');
    assert.ok((await snapshot(target)).selection.slot===slot);
    if(n===0)await screen(target,'immersive-target-selected');
+   // Observe the short revealed stage on all clients before the action. Sequential
+   // public-network waits can miss an already completed stage on another client.
+   await Promise.all(pages.map(p=>p.evaluate(()=>{
+    window.__drawReveal=new Promise((resolve,reject)=>{
+     const timer=setTimeout(()=>{observer.disconnect();reject(new Error('未观察到翻牌展示'));},15000);
+     const observer=new MutationObserver(()=>{
+      const node=document.querySelector('.draw-effect[data-stage="revealed"]');if(!node)return;
+      const r=node.getBoundingClientRect();clearTimeout(timer);observer.disconnect();
+      resolve({card:node.querySelector('.flip-front [data-card-id]')?.dataset.cardId,finished:Boolean(document.querySelector('.finish-layer')),visible:r.width>0&&r.height>0});
+     });
+     observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-stage']});
+    });
+   })));
    await actor.locator('[data-api="draw"]').click();
-   for(const p of pages)await p.waitForSelector('.draw-effect[data-stage="revealed"]');
-   for(const p of pages){assert.equal(await p.locator('.draw-effect .flip-front [data-card-id]').getAttribute('data-card-id'),card.id);assert.equal(await p.locator('.finish-layer').count(),0);assert.ok(await chineseInterface(p),'English during game');}
+   for(const reveal of await Promise.all(pages.map(p=>p.evaluate(()=>window.__drawReveal)))){assert.equal(reveal.card,card.id);assert.equal(reveal.finished,false);assert.equal(reveal.visible,true);}
+   for(const p of pages)assert.ok(await chineseInterface(p),'English during game');
    if(!paired&&!unpaired)await screen(actor,'immersive-card-revealed');
    await actor.waitForSelector('.draw-effect',{state:'detached'});
    assert.equal(await actor.locator(`.hand-scroll [data-card-id="${card.id}"]`).count(),1,'drawn card never arrived in hand');
@@ -222,5 +235,12 @@ async function modalAndLayoutChecks(browser){
   checks.push('三浏览器会话无页面异常');
   console.log(JSON.stringify({base,checks,screenshots,errors},null,2));
   fs.writeFileSync(path.join(output,'immersive-browser-report.json'),JSON.stringify({base,checks,screenshots,errors},null,2));
+ }catch(error){
+  const diagnostics=await Promise.all(pages.map(p=>p.evaluate(async()=>{
+   const s=JSON.parse(localStorage.getItem('turtle-session')||'null');
+   const v=s?await fetch('/api/rooms/'+s.code+'/state',{headers:{Authorization:'Bearer '+s.token}}).then(r=>r.json()):{};
+   return {phase:v.phase,turn:v.turn,revision:v.revision,network:document.querySelector('.connection-tag')?.textContent,stage:document.querySelector('.draw-effect')?.dataset.stage,action:v.lastAction?.kind,hidden:document.hidden,observed:await window.__drawReveal?.catch(e=>String(e))};
+  }).catch(e=>String(e))));
+  fs.writeFileSync(path.join(output,'browser-failure.json'),JSON.stringify({error:String(error),diagnostics,errors},null,2));throw error;
  }finally{for(const p of pages)try{await p.evaluate(async()=>{const s=JSON.parse(localStorage.getItem('turtle-session')||'null');if(s)await fetch('/api/rooms/'+s.code+'/action',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+s.token},body:JSON.stringify({type:'leave',requestId:crypto.randomUUID()}),signal:AbortSignal.timeout(8000)})})}catch{}for(const c of contexts)await c.close();await browser.close();}
 })().catch(e=>{console.error(e.stack);process.exitCode=1});

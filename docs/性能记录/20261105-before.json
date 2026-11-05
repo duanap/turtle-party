@@ -1,0 +1,244 @@
+[
+  {
+    "phase": "cold",
+    "elapsed": 9912,
+    "lcp": 5084,
+    "resources": [
+      {
+        "name": "/assets/reference-kit/room-scene.png",
+        "transfer": 2425828,
+        "body": 2425528,
+        "duration": 7604
+      },
+      {
+        "name": "/style.css",
+        "transfer": 34058,
+        "body": 33758,
+        "duration": 1407
+      },
+      {
+        "name": "/mobile.css",
+        "transfer": 22229,
+        "body": 21929,
+        "duration": 271
+      },
+      {
+        "name": "/app.js",
+        "transfer": 57101,
+        "body": 56801,
+        "duration": 1531
+      },
+      {
+        "name": "/assets/icons/settings.png",
+        "transfer": 12400,
+        "body": 12100,
+        "duration": 181
+      },
+      {
+        "name": "/assets/reference-kit/ui-atlas.png",
+        "transfer": 2066489,
+        "body": 2066189,
+        "duration": 7435
+      },
+      {
+        "name": "/assets/icons/leave.png",
+        "transfer": 11357,
+        "body": 11057,
+        "duration": 197
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/leaf_right.png",
+        "transfer": 27181,
+        "body": 26881,
+        "duration": 1622
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/leaf_left.png",
+        "transfer": 27658,
+        "body": 27358,
+        "duration": 2966
+      },
+      {
+        "name": "/assets/rules-popup/assets/panel/popup_panel_blank.png",
+        "transfer": 263751,
+        "body": 263451,
+        "duration": 3247
+      },
+      {
+        "name": "/assets/rules-popup/assets/header/header_title_blank.png",
+        "transfer": 80256,
+        "body": 79956,
+        "duration": 3324
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule01_remove_one_card.png",
+        "transfer": 72428,
+        "body": 72128,
+        "duration": 1622
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule02_match_pairs.png",
+        "transfer": 56109,
+        "body": 55809,
+        "duration": 988
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule04_sleepy_turtle.png",
+        "transfer": 74922,
+        "body": 74622,
+        "duration": 1204
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule03_draw_card.png",
+        "transfer": 67120,
+        "body": 66820,
+        "duration": 2348
+      },
+      {
+        "name": "/assets/buttons/button_gold_clean.png",
+        "transfer": 64155,
+        "body": 63855,
+        "duration": 1991
+      },
+      {
+        "name": "/assets/buttons/button_cream_clean.png",
+        "transfer": 59728,
+        "body": 59428,
+        "duration": 1234
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/divider_line.png",
+        "transfer": 8079,
+        "body": 7779,
+        "duration": 631
+      }
+    ],
+    "navigation": [
+      {
+        "load": 9256.600000023842,
+        "dom": 1818.2000000476837
+      }
+    ]
+  },
+  {
+    "phase": "warm",
+    "elapsed": 9823,
+    "lcp": 5100,
+    "resources": [
+      {
+        "name": "/assets/reference-kit/room-scene.png",
+        "transfer": 2425828,
+        "body": 2425528,
+        "duration": 7530
+      },
+      {
+        "name": "/style.css",
+        "transfer": 34058,
+        "body": 33758,
+        "duration": 335
+      },
+      {
+        "name": "/mobile.css",
+        "transfer": 22229,
+        "body": 21929,
+        "duration": 227
+      },
+      {
+        "name": "/app.js",
+        "transfer": 57101,
+        "body": 56801,
+        "duration": 429
+      },
+      {
+        "name": "/assets/icons/settings.png",
+        "transfer": 12400,
+        "body": 12100,
+        "duration": 617
+      },
+      {
+        "name": "/assets/reference-kit/ui-atlas.png",
+        "transfer": 2066489,
+        "body": 2066189,
+        "duration": 8598
+      },
+      {
+        "name": "/assets/icons/leave.png",
+        "transfer": 11357,
+        "body": 11057,
+        "duration": 493
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/leaf_left.png",
+        "transfer": 27658,
+        "body": 27358,
+        "duration": 832
+      },
+      {
+        "name": "/assets/rules-popup/assets/panel/popup_panel_blank.png",
+        "transfer": 263751,
+        "body": 263451,
+        "duration": 4521
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule01_remove_one_card.png",
+        "transfer": 72428,
+        "body": 72128,
+        "duration": 2884
+      },
+      {
+        "name": "/assets/rules-popup/assets/header/header_title_blank.png",
+        "transfer": 80256,
+        "body": 79956,
+        "duration": 3462
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule03_draw_card.png",
+        "transfer": 67120,
+        "body": 66820,
+        "duration": 3697
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/leaf_right.png",
+        "transfer": 27181,
+        "body": 26881,
+        "duration": 4115
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule02_match_pairs.png",
+        "transfer": 56109,
+        "body": 55809,
+        "duration": 4303
+      },
+      {
+        "name": "/assets/rules-popup/assets/illustrations/rule04_sleepy_turtle.png",
+        "transfer": 74922,
+        "body": 74622,
+        "duration": 3275
+      },
+      {
+        "name": "/assets/buttons/button_gold_clean.png",
+        "transfer": 64155,
+        "body": 63855,
+        "duration": 2712
+      },
+      {
+        "name": "/assets/buttons/button_cream_clean.png",
+        "transfer": 59728,
+        "body": 59428,
+        "duration": 3991
+      },
+      {
+        "name": "/assets/rules-popup/assets/decor/divider_line.png",
+        "transfer": 8079,
+        "body": 7779,
+        "duration": 3101
+      }
+    ],
+    "navigation": [
+      {
+        "load": 9167.100000023842,
+        "dom": 567
+      }
+    ]
+  }
+]
