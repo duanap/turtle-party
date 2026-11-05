@@ -3,6 +3,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash, randomBytes, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
+import { gzipSync } from 'node:zlib';
 import {
   startGame, drawCard, shuffleHand, moveCard, publicView, decideAiSlot, shouldAiShuffle
 } from './engine.js';
@@ -22,7 +23,7 @@ const DRAW_ANIMATION_MS=Math.max(0,Number(process.env.DRAW_ANIMATION_MS ?? 2400)
 const DEAL_ANIMATION_MS=Math.max(0,Number(process.env.DEAL_ANIMATION_MS ?? 1200));
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8',
   '.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.ico':'image/x-icon',
-  '.png':'image/png','.jpg':'image/jpeg'};
+  '.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
 const securityHeaders={
   'X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY',
   'Referrer-Policy':'no-referrer','Cross-Origin-Resource-Policy':'same-origin',
@@ -393,9 +394,26 @@ async function staticFile(req,res,url) {
   if(filename!==ROOT&&!filename.startsWith(ROOT+sep))fail('拒绝访问',403);
   try {
     if(!(await stat(filename)).isFile())fail('文件不存在',404);
-    const bytes=await readFile(filename);
-    const headers={...securityHeaders,'Content-Type':mime[extname(filename)]||'application/octet-stream',
-      'Content-Length':bytes.length,'Cache-Control':extname(filename)==='.html'?'no-store':'no-cache, must-revalidate'};
+    const extension=extname(filename);
+    const original=await readFile(filename);
+    const compressible=['.html','.js','.css'].includes(extension);
+    const acceptsGzip=String(req.headers['accept-encoding']||'').split(',').some(value=>{
+      const [encoding,...params]=value.trim().split(';');
+      return encoding==='gzip'&&!params.some(p=>/^q\s*=\s*0(?:\.0*)?$/.test(p.trim()));
+    });
+    const compressed=compressible&&acceptsGzip;
+    const bytes=compressed?gzipSync(original):original;
+    const etag=`"${createHash('sha256').update(bytes).digest('hex')}"`;
+    // Only content-addressed images are immutable; application files must revalidate.
+    const immutable=path.startsWith('/assets/')&&/\.[a-f0-9]{12}\.webp$/.test(path);
+    const headers={...securityHeaders,'Content-Type':mime[extension]||'application/octet-stream',
+      'Content-Length':bytes.length,ETag:etag,
+      'Cache-Control':extension==='.html'?'no-store':immutable?'public, max-age=31536000, immutable':'no-cache, must-revalidate',
+      ...(compressible?{Vary:'Accept-Encoding'}:{}),...(compressed?{'Content-Encoding':'gzip'}:{})};
+    const validators=String(req.headers['if-none-match']||'').split(',').map(value=>value.trim().replace(/^W\//,''));
+    if(validators.includes(etag)||validators.includes('*')){
+      delete headers['Content-Length'];res.writeHead(304,headers);return res.end();
+    }
     res.writeHead(200,headers);
     res.end(req.method==='HEAD'?undefined:bytes);
   }catch(err){if(err.code==='ENOENT')fail('文件不存在',404);throw err;}

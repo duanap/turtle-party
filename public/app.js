@@ -299,22 +299,23 @@ const icons={
   chair:'<path d="M5 13V5a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v8M3 13h18v5H3zM6 18v4m12-4v4"/>',
   shell:'<path d="M3 15c0-7 4-12 9-12s9 5 9 12l-5 6H8zM8 9h8l3 6-4 4H9l-4-4zM8 9l-3-3m11 3 3-3M5 15H3m16 0h2M9 19l-1 2m7-2 1 2"/>'
 };
-const icon=name=>['help','settings','door'].includes(name)?`<img class="icon icon-art" src="/assets/icons/${name==='door'?'leave':name}.png" alt="">`:`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]||icons.cards}</svg>`;
+const imageFiles={"avatars/turtle":"/assets/avatars/turtle_round.6f9adb115ee5.webp","avatars/cat":"/assets/avatars/cat_round.15409f815216.webp","avatars/dog":"/assets/avatars/dog_round.7479fd3a8671.webp","avatars/rabbit":"/assets/avatars/rabbit_round.44536ef15637.webp","avatars/panda":"/assets/avatars/panda_round.8c0cfcbd4228.webp","avatars/owl":"/assets/avatars/owl_round.0fbf8de131f0.webp","avatars/human_boy":"/assets/avatars/human_boy_round.bc132d31f8c2.webp","avatars/human_girl":"/assets/avatars/human_girl_round.1e51b48d30a4.webp","icons/help":"/assets/icons/help.e37942f20584.webp","icons/settings":"/assets/icons/settings.5ce0e838d6bb.webp","icons/leave":"/assets/icons/leave.3c51cfb574ba.webp","seated/boy":"/assets/reference-kit/seated-boy.455509cb43c3.webp","seated/girl":"/assets/reference-kit/seated-girl.665ed0967ad6.webp"};
+const icon=name=>['help','settings','door'].includes(name)?`<img class="icon icon-art" src="${imageFiles['icons/'+(name==='door'?'leave':name)]}" alt="">`:`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]||icons.cards}</svg>`;
 function avatar(player,large=false) {
   const names=['turtle','cat','dog','rabbit','panda','owl','human_boy','human_girl'];
   const index=[...(player?.id||'home')].reduce((sum,c)=>sum+c.charCodeAt(0),0)%names.length;
-  return `<span class="avatar ${large?'avatar-large':''}" aria-hidden="true"><img src="/assets/avatars/${names[index]}_round.png" alt=""></span>`;
+  return `<span class="avatar ${large?'avatar-large':''}" aria-hidden="true"><img src="${imageFiles['avatars/'+names[index]]}" alt=""></span>`;
 }
-const atlasRegions={crest:[30,0,500,258],status:[447,276,510,153],gold:[968,282,462,130],nameplate:[32,270,385,165],wood:[1112,54,322,96],cards:[840,601,217,218],turtle:[826,441,193,125],cup:[1055,555,191,253]};
+const atlasRegions={"crest":[500,258,"/assets/reference-kit/sprite-crest.99a3c63c3f23.webp"],"status":[510,153,"/assets/reference-kit/sprite-status.629e566a352f.webp"],"gold":[462,130,"/assets/reference-kit/sprite-gold.521416f37295.webp"],"cards":[217,218,"/assets/reference-kit/sprite-cards.bbce68bf9482.webp"],"cup":[191,253,"/assets/reference-kit/sprite-cup.e38d3179335a.webp"]};
 function atlas(name,extra='') {
-  const [x,y,w,h]=atlasRegions[name];
-  return `<span class="atlas-art ${extra}" data-art="${name}" aria-hidden="true" style="--art-ratio:${w}/${h}"><img src="/assets/reference-kit/ui-atlas.png" alt="" style="width:${1448/w*100}%;height:${1086/h*100}%;left:${-x/w*100}%;top:${-y/h*100}%"></span>`;
+  const [w,h,src]=atlasRegions[name];
+  return `<span class="atlas-art ${extra}" data-art="${name}" aria-hidden="true" style="--art-ratio:${w}/${h}"><img src="${src}" width="${w}" height="${h}" alt="" style="width:100%;height:100%;left:0;top:0"></span>`;
 }
 function brand(large=false) {
   return `<div class="${large?'brand-emblem':'brand brand-mini'}">${atlas('crest')}<${large?'h1':'span'} class="brand-title">龟牌派对</${large?'h1':'span'}></div>`;
 }
 function sceneFrame() {
-  return `<div class="scene-shell" data-mode="home"><div class="scene-room" aria-hidden="true"><img src="/assets/reference-kit/room-scene.png" alt=""></div><div class="scene-content"></div><div class="dialog-host"></div></div>`;
+  return `<div class="scene-shell" data-mode="home"><div class="scene-room" aria-hidden="true"><img src="/assets/reference-kit/room-scene.f0292e9e6e2e.webp" srcset="/assets/reference-kit/room-scene-mobile.e2609222fb94.webp 960w, /assets/reference-kit/room-scene.f0292e9e6e2e.webp 1672w" sizes="100vw" width="1672" height="941" fetchpriority="high" alt=""></div><div class="scene-content"></div><div class="dialog-host"></div></div>`;
 }
 function tableToolbar(v) {
   const actor=v.players.find(p=>p.id===v.currentPlayerId);
@@ -328,15 +329,15 @@ function landing() {
     <main class="home-stage"><section class="home-entry">${brand(true)}<p class="home-tagline">二至六人围桌，抽一张，配一对。</p>
       <div class="hero-buttons"><button class="btn btn-primary" data-ui="quick">${icon('cards')}快速开始</button><button class="btn btn-cream" data-ui="create">${icon('people')}创建房间</button><button class="btn btn-cream" data-ui="join">${icon('door')}加入房间</button></div></section>
       <aside class="home-rules" aria-labelledby="home-rules-title">
-        <img class="rules-panel-art" src="/assets/rules-popup/assets/panel/popup_panel_blank.png" alt="" aria-hidden="true">
-        <img class="rules-leaf rules-leaf-left" src="/assets/rules-popup/assets/decor/leaf_left.png" alt="" aria-hidden="true">
-        <img class="rules-leaf rules-leaf-right" src="/assets/rules-popup/assets/decor/leaf_right.png" alt="" aria-hidden="true">
-        <img class="rules-header-art" src="/assets/rules-popup/assets/header/header_title_blank.png" alt="" aria-hidden="true">
+        <img class="rules-panel-art" src="/assets/rules-popup/assets/panel/popup_panel_blank.5de16ceaceda.webp" alt="" aria-hidden="true">
+        <img class="rules-leaf rules-leaf-left" src="/assets/rules-popup/assets/decor/leaf_left.ed5cc91174c9.webp" alt="" aria-hidden="true">
+        <img class="rules-leaf rules-leaf-right" src="/assets/rules-popup/assets/decor/leaf_right.71198cd52440.webp" alt="" aria-hidden="true">
+        <img class="rules-header-art" src="/assets/rules-popup/assets/header/header_title_blank.f25024ff63d8.webp" alt="" aria-hidden="true">
         <h2 id="home-rules-title">游戏规则</h2><ol>
-          <li><img src="/assets/rules-popup/assets/illustrations/rule01_remove_one_card.png" alt=""><span>随机移除一张牌</span></li>
-          <li><img src="/assets/rules-popup/assets/illustrations/rule02_match_pairs.png" alt=""><span>相同点数自动配对</span></li>
-          <li><img src="/assets/rules-popup/assets/illustrations/rule03_draw_card.png" alt=""><span>轮流抽牌</span></li>
-          <li><img src="/assets/rules-popup/assets/illustrations/rule04_sleepy_turtle.png" alt=""><span>最后留乌龟者失败</span></li>
+          <li><img src="/assets/rules-popup/assets/illustrations/rule01_remove_one_card.527e04b45cb3.webp" alt=""><span>随机移除一张牌</span></li>
+          <li><img src="/assets/rules-popup/assets/illustrations/rule02_match_pairs.eddf815daa23.webp" alt=""><span>相同点数自动配对</span></li>
+          <li><img src="/assets/rules-popup/assets/illustrations/rule03_draw_card.6ea945a2c773.webp" alt=""><span>轮流抽牌</span></li>
+          <li><img src="/assets/rules-popup/assets/illustrations/rule04_sleepy_turtle.96c9280d8d92.webp" alt=""><span>最后留乌龟者失败</span></li>
         </ol>
       </aside>
     </main><footer class="home-footer">一桌好牌，一起慢慢玩。</footer></div>`;
@@ -373,7 +374,7 @@ function lobbySeats(v) {
   return `<div class="seat-ring lobby-seats ${v.players.length>2?'many-players':''}" data-capacity="${v.capacity}">${Array.from({length:v.capacity},(_,index)=>{
     const p=v.players[index];if(!p)return '<span class="seat-slot" hidden aria-hidden="true"></span>';
     const [x,y]=positions[index];
-    return `<article class="seat lobby-seat ${index<2?'portrait-seat':'compact-seat'}" data-player-seat="${h(p.id)}" style="--seat-x:${x}%;--seat-y:${y}%">${index<2?`<img class="seated-character" src="/assets/reference-kit/seated-${index%2?'boy':'girl'}.png" alt="">`:''}<div class="compact-portrait">${avatar(p,true)}</div><div class="lobby-nameplate"><img class="nameplate-art" src="/assets/buttons/button_cream_clean.png" alt=""><span class="avatar" aria-hidden="true"><img src="/assets/avatars/turtle_round.png" alt=""></span><div class="lobby-player-name"><strong title="${h(p.name)}">${h(p.name)}</strong><span>${p.owner?'房主':p.bot?'电脑玩家':'已入座'}</span></div></div>${isHost()&&p.bot?`<button class="remove-bot" data-api="remove_bot" data-id="${h(p.id)}" aria-label="移除${h(p.name)}">${icon('close')}</button>`:''}</article>`;
+    return `<article class="seat lobby-seat ${index<2?'portrait-seat':'compact-seat'}" data-player-seat="${h(p.id)}" style="--seat-x:${x}%;--seat-y:${y}%">${index<2?`<img class="seated-character" src="${imageFiles['seated/'+(index%2?'boy':'girl')]}" alt="">`:''}<div class="compact-portrait">${avatar(p,true)}</div><div class="lobby-nameplate"><img class="nameplate-art" src="/assets/buttons/button_cream_clean.34860b73cb6c.webp" alt=""><span class="avatar" aria-hidden="true"><img src="/assets/avatars/turtle_round.6f9adb115ee5.webp" alt=""></span><div class="lobby-player-name"><strong title="${h(p.name)}">${h(p.name)}</strong><span>${p.owner?'房主':p.bot?'电脑玩家':'已入座'}</span></div></div>${isHost()&&p.bot?`<button class="remove-bot" data-api="remove_bot" data-id="${h(p.id)}" aria-label="移除${h(p.name)}">${icon('close')}</button>`:''}</article>`;
   }).join('')}</div>`;
 }
 function playingCard(card,idx,own=true) {

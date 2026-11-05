@@ -57,6 +57,39 @@ async function action(base,session,type,props={}) {
     type,requestId:randomUUID(),...props},session.token);
 }
 
+test('静态资源：WebP 类型、不可变图片缓存、压缩协商及条件请求',async t=> {
+  const {base,child}=await startServer();
+  t.after(async()=>{await stopServer(child);});
+  const source=await readFile(new URL('../public/app.js',import.meta.url),'utf8');
+  const imagePath=source.match(/\/assets\/reference-kit\/room-scene\.[a-f0-9]{12}\.webp/)[0];
+  const image=await fetch(base+imagePath);
+  assert.equal(image.headers.get('content-type'),'image/webp');
+  assert.match(image.headers.get('cache-control'),/max-age=31536000, immutable/);
+  assert.equal(image.headers.get('content-encoding'),null);
+  const imageBody=await image.arrayBuffer();
+  const head=await fetch(base+imagePath,{method:'HEAD'});
+  assert.equal(Number(head.headers.get('content-length')),imageBody.byteLength);
+  assert.equal((await head.arrayBuffer()).byteLength,0);
+  const unchanged=await fetch(base+imagePath,{headers:{'If-None-Match':image.headers.get('etag')}});
+  assert.equal(unchanged.status,304);
+  assert.equal((await unchanged.arrayBuffer()).byteLength,0);
+  const gzip=await fetch(base+'/app.js',{headers:{'Accept-Encoding':'gzip'}});
+  assert.equal(gzip.headers.get('content-encoding'),'gzip');
+  assert.equal(gzip.headers.get('vary'),'Accept-Encoding');
+  assert.match(gzip.headers.get('cache-control'),/must-revalidate/);
+  assert.ok(Number(gzip.headers.get('content-length'))<Buffer.byteLength(source)/2);
+  assert.equal(await gzip.text(),source);
+  const identity=await fetch(base+'/app.js',{headers:{'Accept-Encoding':'gzip;q=0, identity'}});
+  assert.equal(identity.headers.get('content-encoding'),null);
+  assert.notEqual(identity.headers.get('etag'),gzip.headers.get('etag'));
+  assert.equal(await identity.text(),source);
+  const appUnchanged=await fetch(base+'/app.js',{headers:{'Accept-Encoding':'gzip','If-None-Match':gzip.headers.get('etag')}});
+  assert.equal(appUnchanged.status,304);
+  assert.equal((await fetch(base+'/')).headers.get('cache-control'),'no-store');
+  assert.equal((await fetch(base+'/api/health')).headers.get('cache-control'),'no-store');
+  assert.equal((await fetch(base+'/assets/reference-kit/room-scene.png')).status,404);
+});
+
 test('联机 API：创建、邀请、AI 补位、身份隔离、开始、重连与 SSE',async t=> {
   const {base,child}=await startServer();
   t.after(async()=>{await stopServer(child);});
