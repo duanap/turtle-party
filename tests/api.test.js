@@ -23,7 +23,7 @@ async function startServer(options={}) {
   const child=spawn(process.execPath,['server/index.js'],{
     cwd:fileURLToPath(new URL('../',import.meta.url)),
     env:{...process.env,PORT:String(port),HOST:'127.0.0.1',NODE_ENV:'test',DATA_DIR:dataDir,
-      DISCONNECT_GRACE_MS:'300',DRAW_ANIMATION_MS:'0',...options.env},
+      DISCONNECT_GRACE_MS:'300',DRAW_ANIMATION_MS:'0',DEAL_ANIMATION_MS:'0',...options.env},
     stdio:'ignore'
   });
   const base=`http://127.0.0.1:${port}`;
@@ -56,6 +56,39 @@ async function action(base,session,type,props={}) {
   return post(base,`/api/rooms/${session.code}/action`,{
     type,requestId:randomUUID(),...props},session.token);
 }
+
+test('静态资源：WebP 类型、不可变图片缓存、压缩协商及条件请求',async t=> {
+  const {base,child}=await startServer();
+  t.after(async()=>{await stopServer(child);});
+  const source=await readFile(new URL('../public/app.js',import.meta.url),'utf8');
+  const imagePath=source.match(/\/assets\/reference-kit\/room-scene\.[a-f0-9]{12}\.webp/)[0];
+  const image=await fetch(base+imagePath);
+  assert.equal(image.headers.get('content-type'),'image/webp');
+  assert.match(image.headers.get('cache-control'),/max-age=31536000, immutable/);
+  assert.equal(image.headers.get('content-encoding'),null);
+  const imageBody=await image.arrayBuffer();
+  const head=await fetch(base+imagePath,{method:'HEAD'});
+  assert.equal(Number(head.headers.get('content-length')),imageBody.byteLength);
+  assert.equal((await head.arrayBuffer()).byteLength,0);
+  const unchanged=await fetch(base+imagePath,{headers:{'If-None-Match':image.headers.get('etag')}});
+  assert.equal(unchanged.status,304);
+  assert.equal((await unchanged.arrayBuffer()).byteLength,0);
+  const gzip=await fetch(base+'/app.js',{headers:{'Accept-Encoding':'gzip'}});
+  assert.equal(gzip.headers.get('content-encoding'),'gzip');
+  assert.equal(gzip.headers.get('vary'),'Accept-Encoding');
+  assert.match(gzip.headers.get('cache-control'),/must-revalidate/);
+  assert.ok(Number(gzip.headers.get('content-length'))<Buffer.byteLength(source)/2);
+  assert.equal(await gzip.text(),source);
+  const identity=await fetch(base+'/app.js',{headers:{'Accept-Encoding':'gzip;q=0, identity'}});
+  assert.equal(identity.headers.get('content-encoding'),null);
+  assert.notEqual(identity.headers.get('etag'),gzip.headers.get('etag'));
+  assert.equal(await identity.text(),source);
+  const appUnchanged=await fetch(base+'/app.js',{headers:{'Accept-Encoding':'gzip','If-None-Match':gzip.headers.get('etag')}});
+  assert.equal(appUnchanged.status,304);
+  assert.equal((await fetch(base+'/')).headers.get('cache-control'),'no-store');
+  assert.equal((await fetch(base+'/api/health')).headers.get('cache-control'),'no-store');
+  assert.equal((await fetch(base+'/assets/reference-kit/room-scene.png')).status,404);
+});
 
 test('联机 API：创建、邀请、AI 补位、身份隔离、开始、重连与 SSE',async t=> {
   const {base,child}=await startServer();
@@ -370,4 +403,32 @@ test('六位数字房间号、跨玩家选牌预览与展示期间操作保护',
       assert.equal((await action(base,next,'select',{slot:0,turn:v.turn})).status,409);
     }
   }
+});
+
+test('加入房间拒绝非六位数字号码，不把数字型输入悄悄转换为字符串',async t=>{
+  const {base,child,dataDir}=await startServer();
+  t.after(async()=>{await stopServer(child);await rm(dataDir,{recursive:true,force:true});});
+  for(const code of [123456,'ABCDE1','12345','1234567','１２３４５６','']){
+    const response=await post(base,'/api/join',{name:'访客',code});
+    assert.equal(response.status,400);assert.match(response.data.error,/六位数字/);
+  }
+});
+
+test('选牌者的最后一条实时连接断开时，立即清除提牌预览并保留座位',async t=>{
+  const {base,child,dataDir}=await startServer();
+  t.after(async()=>{await stopServer(child);await rm(dataDir,{recursive:true,force:true});});
+  const a=(await post(base,'/api/rooms',{name:'甲',capacity:2})).data;
+  const b=(await post(base,'/api/join',{name:'乙',code:a.code})).data;
+  await action(base,a,'start');const initial=(await state(base,a.code,a.token)).data;
+  if(initial.phase==='finished')return;
+  const actor=initial.currentPlayerId===a.playerId?a:b,other=actor===a?b:a;
+  const controller=new AbortController();
+  const response=await fetch(`${base}/api/rooms/${a.code}/events`,{headers:{authorization:`Bearer ${actor.token}`},signal:controller.signal});
+  const reader=response.body.getReader();await reader.read();
+  assert.equal((await action(base,actor,'select',{slot:0,turn:initial.turn})).status,200);
+  assert.equal((await state(base,a.code,other.token)).data.selection.slot,0);
+  controller.abort();
+  await waitFor(async()=>!(await state(base,a.code,other.token)).data.selection,1000);
+  const after=(await state(base,a.code,other.token)).data;
+  assert.equal(after.players.length,2);assert.equal(after.turn,initial.turn);
 });

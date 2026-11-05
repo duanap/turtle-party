@@ -12,6 +12,7 @@ Play Old Maid with **2–6 players**, fair AI opponents, or friends in a shared 
 - **Friend rooms:** Join via a six-digit room code (including leading zeros) and add AI seats.
 - **Classic rules:** Remove one card from a 52-card deck; discard matching ranks; the last player with one unmatched card loses.
 - **Interaction:** Synchronized selection raises the target's card. Every drawn face is revealed to the table, moves into the actor's hand, then pairs are animated away. The game interface uses Chinese text and always-visible home rules.
+- **Immersive table:** Entry, waiting and play share one scene, using supplied transparent PNG artwork. Mutable labels stay in HTML; each playing card remains a separate interactive element. Modal settings provide optional quiet sound and reduced motion.
 - **Resilience:** SSE updates, reconnection, polling fallback, temporary autoplay, and private single-instance room snapshots.
 
 ## Run locally
@@ -47,6 +48,6 @@ The earlier [v1.2 design document](docs/抽乌龟-游戏设计-v1.2.md) remains 
 
 ## Development and limitations
 
-Run `npm test` before submitting a pull request. CI checks Node.js 20 and 22. Persistent room data is stored in a private JSON file and is safe for **one Node.js process only**. Do not commit `data/`. Browser sessions use `localStorage`; deploy behind HTTPS.
+Run `npm test` (35 tests) before submitting a pull request. CI checks Node.js 20 and 22. Optional `npm run test:browser` checks use a separately available Playwright installation, without adding a game runtime dependency; see the testing guide. Persistent room data is stored in a private JSON file and is safe for **one Node.js process only**. Do not commit `data/`. Browser sessions use `localStorage`; deploy behind HTTPS.
 
 **License:** No open-source license is currently granted. A public GitHub repository does not automatically authorize reuse or redistribution.

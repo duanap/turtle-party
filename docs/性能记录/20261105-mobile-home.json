@@ -1,0 +1,208 @@
+[
+  {
+    "phase": "cold",
+    "elapsed": 1974,
+    "lcp": 1044,
+    "resources": [
+      {
+        "name": "/assets/mobile-home/room.d6c7e572368b.webp",
+        "transfer": 42602,
+        "body": 42302,
+        "duration": 242
+      },
+      {
+        "name": "/style.css",
+        "transfer": 8981,
+        "body": 8681,
+        "duration": 275
+      },
+      {
+        "name": "/mobile.css",
+        "transfer": 6307,
+        "body": 6007,
+        "duration": 275
+      },
+      {
+        "name": "/app.js",
+        "transfer": 19601,
+        "body": 19301,
+        "duration": 320
+      },
+      {
+        "name": "/assets/mobile-home/logo.7f3de75ecf0d.webp",
+        "transfer": 37972,
+        "body": 37672,
+        "duration": 445
+      },
+      {
+        "name": "/assets/mobile-home/music.5ce212f8e44c.webp",
+        "transfer": 4874,
+        "body": 4574,
+        "duration": 459
+      },
+      {
+        "name": "/assets/mobile-home/settings.3a2f64ae2a04.webp",
+        "transfer": 5626,
+        "body": 5326,
+        "duration": 505
+      },
+      {
+        "name": "/assets/mobile-home/flower.b889b3ac42e4.webp",
+        "transfer": 13598,
+        "body": 13298,
+        "duration": 566
+      },
+      {
+        "name": "/assets/mobile-home/pilot.2a8106a6aa21.webp",
+        "transfer": 18142,
+        "body": 17842,
+        "duration": 581
+      },
+      {
+        "name": "/assets/mobile-home/headphones.27cb431cbbae.webp",
+        "transfer": 12780,
+        "body": 12480,
+        "duration": 630
+      },
+      {
+        "name": "/assets/mobile-home/cards.45cee23915ce.webp",
+        "transfer": 11468,
+        "body": 11168,
+        "duration": 366
+      },
+      {
+        "name": "/assets/mobile-home/gold.60b234988962.webp",
+        "transfer": 7246,
+        "body": 6946,
+        "duration": 413
+      },
+      {
+        "name": "/assets/mobile-home/cream.0eb9264725a0.webp",
+        "transfer": 5656,
+        "body": 5356,
+        "duration": 243
+      },
+      {
+        "name": "/assets/mobile-home/green.8548427a8698.webp",
+        "transfer": 6032,
+        "body": 5732,
+        "duration": 335
+      },
+      {
+        "name": "/assets/mobile-home/rules.eb70647501e0.webp",
+        "transfer": 21578,
+        "body": 21278,
+        "duration": 382
+      }
+    ],
+    "navigation": [
+      {
+        "load": 1279.7000000476837,
+        "dom": 647.2000000476837
+      }
+    ]
+  },
+  {
+    "phase": "warm",
+    "elapsed": 1061,
+    "lcp": 408,
+    "resources": [
+      {
+        "name": "/assets/mobile-home/room.d6c7e572368b.webp",
+        "transfer": 0,
+        "body": 42302,
+        "duration": 0
+      },
+      {
+        "name": "/style.css",
+        "transfer": 300,
+        "body": 0,
+        "duration": 154
+      },
+      {
+        "name": "/mobile.css",
+        "transfer": 300,
+        "body": 0,
+        "duration": 137
+      },
+      {
+        "name": "/app.js",
+        "transfer": 300,
+        "body": 0,
+        "duration": 200
+      },
+      {
+        "name": "/assets/mobile-home/logo.7f3de75ecf0d.webp",
+        "transfer": 0,
+        "body": 37672,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/music.5ce212f8e44c.webp",
+        "transfer": 0,
+        "body": 4574,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/settings.3a2f64ae2a04.webp",
+        "transfer": 0,
+        "body": 5326,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/flower.b889b3ac42e4.webp",
+        "transfer": 0,
+        "body": 13298,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/pilot.2a8106a6aa21.webp",
+        "transfer": 0,
+        "body": 17842,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/headphones.27cb431cbbae.webp",
+        "transfer": 0,
+        "body": 12480,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/cards.45cee23915ce.webp",
+        "transfer": 0,
+        "body": 11168,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/gold.60b234988962.webp",
+        "transfer": 0,
+        "body": 6946,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/green.8548427a8698.webp",
+        "transfer": 0,
+        "body": 5732,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/cream.0eb9264725a0.webp",
+        "transfer": 0,
+        "body": 5356,
+        "duration": 0
+      },
+      {
+        "name": "/assets/mobile-home/rules.eb70647501e0.webp",
+        "transfer": 0,
+        "body": 21278,
+        "duration": 0
+      }
+    ],
+    "navigation": [
+      {
+        "load": 379.1999999284744,
+        "dom": 374.2999999523163
+      }
+    ]
+  }
+]
