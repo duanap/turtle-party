@@ -235,14 +235,16 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 .modal-note{margin:15px 0;color:#896542;font-size:12px;line-height:1.6;text-align:center}
 .full-rules{margin:0;padding-left:22px;color:#70482d;font-size:14px;line-height:1.75}
 .full-rules li{padding:4px 0}
-.home-rules{width:100%;max-width:430px;margin:8vh auto 0}
-.home-rules .panel-body{max-height:none;overflow:visible}
-.home-rules ol{list-style:none;margin:0;padding:0}
-.home-rules li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid #d4b38566;font-size:15px;font-weight:700;line-height:1.45}
-.home-rules li:last-child{border:0}
-.home-rules small{display:block;margin-top:4px;color:#8a603b;font-size:12px;font-weight:400;line-height:1.45}
-.home-rules .rule-symbol{font-size:29px}
-.home-rules .rule-symbol .icon{width:28px;height:28px}
+.home-rules{position:relative;container-type:inline-size;flex:none;width:100%;max-width:430px;aspect-ratio:502/594;margin:8vh auto 0;color:#54250f}
+.rules-panel-art{position:absolute;bottom:0;left:0;width:100%;height:auto;pointer-events:none}
+.rules-header-art{position:absolute;top:0;left:17%;width:66%;height:auto;pointer-events:none}
+.rules-leaf{position:absolute;top:8%;width:15%;height:auto;pointer-events:none}
+.rules-leaf-left{left:12%}.rules-leaf-right{right:12%}
+.home-rules h2{position:absolute;top:2.5%;left:23%;width:54%;height:13.5%;display:flex;align-items:center;justify-content:center;margin:0;color:#fff2ce;font-size:8.4cqw;font-weight:900;line-height:1;white-space:nowrap;text-shadow:0 2px 2px #653012}
+.home-rules ol{position:absolute;inset:19% 8% 6%;display:grid;grid-template-rows:repeat(4,minmax(0,1fr));list-style:none;margin:0;padding:0}
+.home-rules li{display:grid;grid-template-columns:32% minmax(0,1fr);gap:3%;align-items:center;min-height:0;padding:0 0 2%;background:url('/assets/rules-popup/assets/decor/divider_line.png') center bottom/100% auto no-repeat;font-size:5.8cqw;font-weight:900;line-height:1.2;white-space:nowrap}
+.home-rules li:last-child{background:none}
+.home-rules li img{display:block;width:100%;height:88%;object-fit:contain}
 
 .wood-ribbon{display:flex;align-items:center;justify-content:center;gap:16px;height:58px;min-height:58px;min-width:0;max-width:750px;padding:0 28px 3px;background:url('/assets/tables/panel_wood_oval_blank.png') center/100% 100% no-repeat;color:#ffeac5;font-size:14px;line-height:1.2}
 .wood-ribbon>*+*{padding-left:14px;border-left:1px solid #b07b45}

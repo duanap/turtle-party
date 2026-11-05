@@ -55,7 +55,7 @@ async function modalAndLayoutChecks(browser){
    const separated=await p.evaluate(()=>document.querySelector('.home-entry').getBoundingClientRect().right<document.querySelector('.home-rules').getBoundingClientRect().left);
    assert.equal(separated,true,'home controls overlap rules');
   }
-  assert.equal(await p.locator('.home-rules li').count(),5);
+  assert.equal(await p.locator('.home-rules li').count(),4);
   for(const entry of ['quick','create','join']){
    await p.locator(`[data-ui="${entry}"]`).click();await rowLayout(p);await artworkAlignment(p);
    assert.equal(await background.evaluate(el=>el.isConnected),true);

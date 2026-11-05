@@ -47,3 +47,7 @@ Precise edit of this transparent PNG button asset. Remove ONLY the extra thin cu
 ## 完整场景构图校准
 
 现使用用户新提供的无字完整房间底图和透明组件图，原样放在 reference-kit 下。房间号牌匾、等待标牌、主按钮、纸牌装饰及杯子按图集区域显示，真实文字独立叠加。缺少的坐姿人物层通过内置 image_gen 补齐为独立透明 PNG，详情和最终提示词见 [场景素材说明](reference-kit/README.md)。原 95 个压缩包文件继续保留。
+
+## 首页游戏规则素材
+
+用户提供的 turtle-party-rules-popup-transparent.zip 原样解压在 rules-popup/，包含全部 19 个文件及原始 README、manifest 和参考图。首页由独立空白面板、无字木质标题牌、左右叶片、三条 PNG 分隔线与四张规则插画组成；全部 PNG 保持原比例。标题和四条规则为 HTML，使用容器宽度同步缩放，并保持默认展开。整页参考图、带字标题、文字 PNG 和已组装模板仅保留供参考，不用于运行界面。桌面右侧围桌布局，手机竖屏在主按钮下方完整展示，可正常滚动。

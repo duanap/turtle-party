@@ -327,13 +327,18 @@ function landing() {
   return `<div class="home-page"><header class="home-topbar"><span class="home-welcome">围桌而坐，好戏开场</span><button class="round-button" data-ui="settings" aria-label="游戏设置">${icon('settings')}</button></header>
     <main class="home-stage"><section class="home-entry">${brand(true)}<p class="home-tagline">二至六人围桌，抽一张，配一对。</p>
       <div class="hero-buttons"><button class="btn btn-primary" data-ui="quick">${icon('cards')}快速开始</button><button class="btn btn-cream" data-ui="create">${icon('people')}创建房间</button><button class="btn btn-cream" data-ui="join">${icon('door')}加入房间</button></div></section>
-      <aside class="home-rules parchment art-panel" aria-labelledby="home-rules-title"><header class="panel-heading"><h2 id="home-rules-title">游戏规则</h2></header><div class="panel-body"><ol>
-        <li><span class="rule-symbol">${icon('cards')}</span><span>随机移除一张牌<small>一副扑克，藏好这一局的小秘密</small></span></li>
-        <li><span class="rule-symbol">${icon('people')}</span><span>轮流从邻座抽牌<small>先选中，再确认；翻牌全桌可见</small></span></li>
-        <li><span class="rule-symbol">♥</span><span>相同点数自动配对<small>不比花色，只看点数</small></span></li>
-        <li><span class="rule-symbol">${icon('shuffle')}</span><span>配对成功即移出<small>手牌清空，就能安全脱身</small></span></li>
-        <li><span class="rule-symbol">${icon('shell')}</span><span>最后留下乌龟者失败<small>手牌清空，就能安全脱身</small></span></li>
-      </ol></div></aside>
+      <aside class="home-rules" aria-labelledby="home-rules-title">
+        <img class="rules-panel-art" src="/assets/rules-popup/assets/panel/popup_panel_blank.png" alt="" aria-hidden="true">
+        <img class="rules-leaf rules-leaf-left" src="/assets/rules-popup/assets/decor/leaf_left.png" alt="" aria-hidden="true">
+        <img class="rules-leaf rules-leaf-right" src="/assets/rules-popup/assets/decor/leaf_right.png" alt="" aria-hidden="true">
+        <img class="rules-header-art" src="/assets/rules-popup/assets/header/header_title_blank.png" alt="" aria-hidden="true">
+        <h2 id="home-rules-title">游戏规则</h2><ol>
+          <li><img src="/assets/rules-popup/assets/illustrations/rule01_remove_one_card.png" alt=""><span>随机移除一张牌</span></li>
+          <li><img src="/assets/rules-popup/assets/illustrations/rule02_match_pairs.png" alt=""><span>相同点数自动配对</span></li>
+          <li><img src="/assets/rules-popup/assets/illustrations/rule03_draw_card.png" alt=""><span>轮流抽牌</span></li>
+          <li><img src="/assets/rules-popup/assets/illustrations/rule04_sleepy_turtle.png" alt=""><span>最后留乌龟者失败</span></li>
+        </ol>
+      </aside>
     </main><footer class="home-footer">一桌好牌，一起慢慢玩。</footer></div>`;
 }
 function modalFrame(title,content,extra='') {

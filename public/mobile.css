@@ -264,7 +264,6 @@
 @media(max-width:680px) and (orientation:portrait){
  .hero-buttons{gap:6px}.hero-buttons .btn{--control-h:66px;--control-font:18px;width:238px}.hero-buttons .btn-primary{--control-h:78px;--control-font:22px;width:270px}
  .home-rules{margin-top:24px;max-width:360px}.panel-heading h2{font-size:22px}
- .home-rules li{font-size:14px;padding:12px 0;grid-template-columns:26px minmax(0,1fr);gap:10px}.home-rules small{font-size:11px}.home-rules .rule-symbol .icon{width:25px;height:25px}
  .modal-panel{width:calc(100vw - 32px)}.field{grid-template-columns:74px minmax(0,1fr);gap:9px;margin:14px 0}.field>span{font-size:13px}.field input,.field select{font-size:14px;height:42px;padding:9px 10px}
  .modal-intro{font-size:13px;margin-bottom:14px}.btn{--control-h:48px;--control-font:15px;min-width:126px}.btn .icon{width:20px;height:20px}
  .action-row,.room-actions{gap:10px}.settings-list>label{font-size:14px;min-height:70px}.settings-list small,.modal-note{font-size:12px}
@@ -295,7 +294,7 @@
 @media(max-width:1100px) and (max-height:600px) and (orientation:landscape){
  .btn{--control-h:40px;--control-font:13px;min-width:120px}.btn .icon{width:18px;height:18px}
  .hero-buttons{gap:4px}.hero-buttons .btn{--control-h:43px;--control-font:15px;width:205px}.hero-buttons .btn-primary{--control-h:53px;--control-font:19px;width:238px}
- .home-rules{margin-top:6vh;max-width:310px}.panel-heading h2{font-size:19px}.home-rules li{grid-template-columns:22px minmax(0,1fr);font-size:12px;padding:7px 0;gap:8px}.home-rules small{font-size:10px;margin-top:3px}.home-rules .rule-symbol{font-size:24px}.home-rules .rule-symbol .icon{width:22px;height:22px}
+ .home-rules{margin-top:0;max-width:min(310px,76svh)}.panel-heading h2{font-size:19px}
  .modal-panel,.finish-banner{width:min(420px,calc(100vw - 32px))}
  .form-panel .modal-intro{display:none}.field{grid-template-columns:79px minmax(0,1fr);gap:10px;margin:10px 0}.field>span{font-size:13px}.field input,.field select{height:38px;font-size:13px;padding:7px 10px}
  .form-error{font-size:12px;min-height:16px}.action-row{margin-top:8px;gap:10px}.settings-list>label{min-height:55px;padding:8px 0;font-size:13px}.settings-list small{font-size:11px;margin-top:3px}.modal-note{font-size:11px;margin:9px 0}.full-rules{font-size:13px;line-height:1.65}.full-rules li{padding:3px 0}
