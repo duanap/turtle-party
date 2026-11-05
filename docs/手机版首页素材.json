@@ -1,0 +1,81 @@
+{
+  "source": "C:/Users/18282/Downloads/龟牌派对游戏UI素材包.png",
+  "reference": "C:/Users/18282/Downloads/龟牌派对：温馨乌龟牌局.png",
+  "tool": "image_gen built-in; sharp used only for deterministic region export and WebP encoding",
+  "generated": "C:/Users/18282/.codex/generated_images/01a1a482-36b7-7662-885a-6aed5bc0dbd7/exec-306b6598-67e1-4c7f-8f62-904c628114f1.png",
+  "files": {
+    "room": {
+      "src": "/assets/mobile-home/room.d6c7e572368b.webp",
+      "width": 566,
+      "height": 912,
+      "bytes": 42302
+    },
+    "logo": {
+      "src": "/assets/mobile-home/logo.7f3de75ecf0d.webp",
+      "width": 530,
+      "height": 240,
+      "bytes": 37672
+    },
+    "flower": {
+      "src": "/assets/mobile-home/flower.b889b3ac42e4.webp",
+      "width": 193,
+      "height": 180,
+      "bytes": 13298
+    },
+    "pilot": {
+      "src": "/assets/mobile-home/pilot.2a8106a6aa21.webp",
+      "width": 224,
+      "height": 207,
+      "bytes": 17842
+    },
+    "headphones": {
+      "src": "/assets/mobile-home/headphones.27cb431cbbae.webp",
+      "width": 185,
+      "height": 168,
+      "bytes": 12480
+    },
+    "cards": {
+      "src": "/assets/mobile-home/cards.45cee23915ce.webp",
+      "width": 210,
+      "height": 129,
+      "bytes": 11168
+    },
+    "gold": {
+      "src": "/assets/mobile-home/gold.60b234988962.webp",
+      "width": 377,
+      "height": 106,
+      "bytes": 6946
+    },
+    "green": {
+      "src": "/assets/mobile-home/green.8548427a8698.webp",
+      "width": 295,
+      "height": 96,
+      "bytes": 5732
+    },
+    "cream": {
+      "src": "/assets/mobile-home/cream.0eb9264725a0.webp",
+      "width": 376,
+      "height": 103,
+      "bytes": 5356
+    },
+    "rules": {
+      "src": "/assets/mobile-home/rules.eb70647501e0.webp",
+      "width": 685,
+      "height": 292,
+      "bytes": 21278
+    },
+    "music": {
+      "src": "/assets/mobile-home/music.5ce212f8e44c.webp",
+      "width": 120,
+      "height": 120,
+      "bytes": 4574
+    },
+    "settings": {
+      "src": "/assets/mobile-home/settings.3a2f64ae2a04.webp",
+      "width": 120,
+      "height": 119,
+      "bytes": 5326
+    }
+  },
+  "finalPrompt": "Edit target: the supplied 1536x1024 turtle game UI sprite sheet. Production asset cleanup, not a redesign. Preserve the exact existing canvas, artwork sizes, bounding boxes, positions, warm polished 3D style, colors and shapes. Replace the white and pale gray CHECKERBOARD OUTSIDE every asset with genuine transparent alpha, including small spaces between assets. Keep the large rectangular illustrated room/background at the left opaque and unchanged. Keep the top-center wooden turtle logo with the exact Chinese text 龟牌派对 unchanged. Keep the three middle-row turtle characters, their hats/headphones/goggles and green cards, the separate green card fan, and all decorative pieces. On the three large capsule buttons ONLY, remove ALL words AND icons, replacing them seamlessly with their existing gold, lime-green and cream surfaces; retain each outer border, shadow, specular corner highlights and dimensions. On the bottom wide cream rules panel, remove all Chinese writing, all four green bullet dots and the green title pill so the right two thirds and top header area are blank cream; preserve the cream panel border and the cheerful card-holding turtle at the left, preserving its position and size. Do not add labels, new content, backgrounds, grids or placeholder boxes. Keep the top-right round music-note and settings buttons unchanged. All assets remain in exactly their original positions on the sheet; no rearrangement or resizing. Output a clean transparent RGBA sprite sheet."
+}

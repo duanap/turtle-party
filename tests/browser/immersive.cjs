@@ -68,6 +68,14 @@ async function modalAndLayoutChecks(browser){
   }
   if(viewport.width===390)await screen(p,'immersive-home-phone');
  }
+ // The mobile shortcut and the settings dialog share the same saved preference.
+ await p.setViewportSize({width:390,height:844});
+ const soundShortcut=p.locator('[data-ui="toggle-sound"]');
+ assert.equal(await soundShortcut.getAttribute('aria-pressed'),'true');
+ await soundShortcut.click();assert.equal(await p.evaluate(()=>localStorage.getItem('turtle-sound')),'off');
+ await p.locator('[data-ui="settings"]').click();assert.equal(await p.locator('[name="sound"]').isChecked(),false);await p.keyboard.press('Escape');
+ await p.reload();assert.equal(await soundShortcut.getAttribute('aria-pressed'),'false');
+ await soundShortcut.click();assert.equal(await p.evaluate(()=>localStorage.getItem('turtle-sound')),'on');
  await p.setViewportSize({width:1440,height:900});
  await p.locator('[data-ui="settings"]').click();
  await artworkAlignment(p);

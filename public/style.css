@@ -295,10 +295,10 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 
 /* The supplied empty scene is a background plate, not a flattened game interface. */
 .scene-room{position:absolute;inset:0;z-index:-3;overflow:hidden;background:#462e1d}
-.scene-room>img{position:absolute;left:-5%;top:-10%;width:110%;height:110%;object-fit:cover;object-position:center;display:block}
-.scene-shell[data-mode="playing"] .scene-room>img{left:-15%;top:-28%;width:130%;height:130%}
+.scene-room img{position:absolute;left:-5%;top:-10%;width:110%;height:110%;object-fit:cover;object-position:center;display:block}
+.scene-shell[data-mode="playing"] .scene-room img{left:-15%;top:-28%;width:130%;height:130%}
 .atlas-art{position:relative;display:block;overflow:hidden;aspect-ratio:var(--art-ratio);pointer-events:none;flex:none}
-.atlas-art>img{position:absolute;max-width:none;object-fit:fill;pointer-events:none}
+.atlas-art img{position:absolute;max-width:none;object-fit:fill;pointer-events:none}
 .brand-emblem>.atlas-art,.brand-mini>.atlas-art{position:absolute;inset:0;width:100%;height:100%}
 .brand-title{position:absolute;left:12%;right:12%;top:53%;height:34%;display:flex;align-items:center;justify-content:center;margin:0;padding:0;color:#ffe9a7;font-size:70px;font-weight:1000;line-height:1;white-space:nowrap;letter-spacing:.025em;text-shadow:0 3px 0 #af662d,0 5px 0 #5f301a}
 .brand-mini .brand-title{font-size:22px;letter-spacing:0;text-shadow:0 1px 0 #a9622f,0 2px 0 #552d18}
@@ -363,6 +363,12 @@ these rules only place assets and HTML. */ .sr-only{ position:absolute; width:1p
 .lobby-cup{position:absolute;top:300px;width:100px;height:133px}.lobby-cup>.atlas-art{width:100%;height:100%}.cup-left{left:548px}.cup-right{left:1056px}
 
 .nameplate-art{object-fit:contain;}
+.scene-room picture,.atlas-art picture,.home-rules picture{display:contents}
+.home-rules li picture{display:grid;place-items:center;grid-column:1;grid-row:1;width:100%;height:100%;min-height:0}
+.home-rules li>span{grid-column:2;grid-row:1}
+.mobile-home-players,.home-sound,.mobile-action-icon,.rules-brief{display:none}
+.desktop-action-icon{display:contents}
+.home-settings picture{display:contents}.home-settings .icon-art{width:100%;height:100%}
 .lobby-table .table-bottom{bottom:90px;}
 
 @media(min-width:1101px){

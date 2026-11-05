@@ -312,10 +312,11 @@ function atlas(name,extra='') {
   return `<span class="atlas-art ${extra}" data-art="${name}" aria-hidden="true" style="--art-ratio:${w}/${h}"><img src="${src}" width="${w}" height="${h}" alt="" style="width:100%;height:100%;left:0;top:0"></span>`;
 }
 function brand(large=false) {
-  return `<div class="${large?'brand-emblem':'brand brand-mini'}">${atlas('crest')}<${large?'h1':'span'} class="brand-title">龟牌派对</${large?'h1':'span'}></div>`;
+  const art=large?`<span class="atlas-art" aria-hidden="true"><picture><source media="(max-width:680px) and (orientation:portrait)" srcset="/assets/mobile-home/logo.7f3de75ecf0d.webp"><img src="/assets/reference-kit/sprite-crest.99a3c63c3f23.webp" width="500" height="258" alt="" style="width:100%;height:100%;left:0;top:0"></picture></span>`:atlas('crest');
+  return `<div class="${large?'brand-emblem':'brand brand-mini'}">${art}<${large?'h1':'span'} class="brand-title">龟牌派对</${large?'h1':'span'}></div>`;
 }
 function sceneFrame() {
-  return `<div class="scene-shell" data-mode="home"><div class="scene-room" aria-hidden="true"><img src="/assets/reference-kit/room-scene.f0292e9e6e2e.webp" srcset="/assets/reference-kit/room-scene-mobile.e2609222fb94.webp 960w, /assets/reference-kit/room-scene.f0292e9e6e2e.webp 1672w" sizes="100vw" width="1672" height="941" fetchpriority="high" alt=""></div><div class="scene-content"></div><div class="dialog-host"></div></div>`;
+  return `<div class="scene-shell" data-mode="home"><div class="scene-room" aria-hidden="true"><picture><source data-mobile-home-scene media="(max-width:680px) and (orientation:portrait)" srcset="/assets/mobile-home/room.d6c7e572368b.webp"><img src="/assets/reference-kit/room-scene.f0292e9e6e2e.webp" srcset="/assets/reference-kit/room-scene-mobile.e2609222fb94.webp 960w, /assets/reference-kit/room-scene.f0292e9e6e2e.webp 1672w" sizes="100vw" width="1672" height="941" fetchpriority="high" alt=""></picture></div><div class="scene-content"></div><div class="dialog-host"></div></div>`;
 }
 function tableToolbar(v) {
   const actor=v.players.find(p=>p.id===v.currentPlayerId);
@@ -324,20 +325,30 @@ function tableToolbar(v) {
     <div class="top-actions"><button class="round-button" data-ui="rules" aria-label="玩法说明">${icon('help')}</button><button class="round-button" data-ui="settings" aria-label="游戏设置">${icon('settings')}</button><button class="round-button leave-button" data-ui="leave" aria-label="离开牌桌">${icon('door')}</button></div></header>
     <div class="network-banner" id="network-banner" role="status" ${['connected','idle'].includes(state.network)?'hidden':''}>${state.network==='offline'?'网络已断开，座位和手牌已保留。':'正在重新连接，请勿重复操作。'}</div>`;
 }
+function desktopOnlyImage(className,src) {
+  return `<picture><source media="(max-width:680px) and (orientation:portrait)" srcset="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><img class="${className}" src="${src}" alt="" aria-hidden="true"></picture>`;
+}
+function homeActionIcon(desktop,mobile) {
+  const desktopArt=desktop==='door'?desktopOnlyImage('icon icon-art',imageFiles['icons/leave']):icon(desktop);
+  return `<span class="desktop-action-icon">${desktopArt}</span><span class="mobile-action-icon">${mobile}</span>`;
+}
 function landing() {
-  return `<div class="home-page"><header class="home-topbar"><span class="home-welcome">围桌而坐，好戏开场</span><button class="round-button" data-ui="settings" aria-label="游戏设置">${icon('settings')}</button></header>
+  const play='<svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3a2 2 0 0 0-3 1.7v14.6A2 2 0 0 0 7 21l13-7.3a2 2 0 0 0 0-3.4Z"/></svg>';
+  const house='<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 11 10-9 10 9M5 9v12h5v-7h4v7h5V9"/></svg>';
+  return `<div class="home-page"><header class="home-topbar"><span class="home-welcome">围桌而坐，好戏开场</span><button class="round-button home-sound" data-ui="toggle-sound" aria-label="${state.preferences.sound?'关闭音效':'开启音效'}" aria-pressed="${state.preferences.sound}"></button><button class="round-button home-settings" data-ui="settings" aria-label="游戏设置">${desktopOnlyImage('icon icon-art',imageFiles['icons/settings'])}</button></header>
     <main class="home-stage"><section class="home-entry">${brand(true)}<p class="home-tagline">二至六人围桌，抽一张，配一对。</p>
-      <div class="hero-buttons"><button class="btn btn-primary" data-ui="quick">${icon('cards')}快速开始</button><button class="btn btn-cream" data-ui="create">${icon('people')}创建房间</button><button class="btn btn-cream" data-ui="join">${icon('door')}加入房间</button></div></section>
+      <div class="mobile-home-players" aria-hidden="true"><span class="mobile-turtle turtle-flower"></span><span class="mobile-turtle turtle-pilot"></span><span class="mobile-turtle turtle-headphones"></span><span class="mobile-card-fan"></span></div>
+      <div class="hero-buttons"><button class="btn btn-primary" data-ui="quick">${homeActionIcon('cards',play)}快速开始</button><button class="btn btn-cream" data-ui="create">${homeActionIcon('people',house)}创建房间</button><button class="btn btn-cream" data-ui="join">${homeActionIcon('door',icon('people'))}加入房间</button></div></section>
       <aside class="home-rules" aria-labelledby="home-rules-title">
-        <img class="rules-panel-art" src="/assets/rules-popup/assets/panel/popup_panel_blank.5de16ceaceda.webp" alt="" aria-hidden="true">
-        <img class="rules-leaf rules-leaf-left" src="/assets/rules-popup/assets/decor/leaf_left.ed5cc91174c9.webp" alt="" aria-hidden="true">
-        <img class="rules-leaf rules-leaf-right" src="/assets/rules-popup/assets/decor/leaf_right.71198cd52440.webp" alt="" aria-hidden="true">
-        <img class="rules-header-art" src="/assets/rules-popup/assets/header/header_title_blank.f25024ff63d8.webp" alt="" aria-hidden="true">
-        <h2 id="home-rules-title">游戏规则</h2><ol>
-          <li><img src="/assets/rules-popup/assets/illustrations/rule01_remove_one_card.527e04b45cb3.webp" alt=""><span>随机移除一张牌</span></li>
-          <li><img src="/assets/rules-popup/assets/illustrations/rule02_match_pairs.eddf815daa23.webp" alt=""><span>相同点数自动配对</span></li>
-          <li><img src="/assets/rules-popup/assets/illustrations/rule03_draw_card.6ea945a2c773.webp" alt=""><span>轮流抽牌</span></li>
-          <li><img src="/assets/rules-popup/assets/illustrations/rule04_sleepy_turtle.96c9280d8d92.webp" alt=""><span>最后留乌龟者失败</span></li>
+        ${desktopOnlyImage('rules-panel-art','/assets/rules-popup/assets/panel/popup_panel_blank.5de16ceaceda.webp')}
+        ${desktopOnlyImage('rules-leaf rules-leaf-left','/assets/rules-popup/assets/decor/leaf_left.ed5cc91174c9.webp')}
+        ${desktopOnlyImage('rules-leaf rules-leaf-right','/assets/rules-popup/assets/decor/leaf_right.71198cd52440.webp')}
+        ${desktopOnlyImage('rules-header-art','/assets/rules-popup/assets/header/header_title_blank.f25024ff63d8.webp')}
+        <h2 id="home-rules-title">游戏规则<span class="rules-brief">（简要）</span></h2><ol>
+          <li>${desktopOnlyImage('','/assets/rules-popup/assets/illustrations/rule01_remove_one_card.527e04b45cb3.webp')}<span>随机移除一张牌</span></li>
+          <li>${desktopOnlyImage('','/assets/rules-popup/assets/illustrations/rule02_match_pairs.eddf815daa23.webp')}<span>相同点数自动配对</span></li>
+          <li>${desktopOnlyImage('','/assets/rules-popup/assets/illustrations/rule03_draw_card.6ea945a2c773.webp')}<span>轮流抽牌</span></li>
+          <li>${desktopOnlyImage('','/assets/rules-popup/assets/illustrations/rule04_sleepy_turtle.96c9280d8d92.webp')}<span>最后留乌龟者失败</span></li>
         </ol>
       </aside>
     </main><footer class="home-footer">一桌好牌，一起慢慢玩。</footer></div>`;
@@ -629,6 +640,8 @@ function render() {
   const mode=!state.view?'home':state.view.phase==='lobby'?'lobby':'playing';
   content.innerHTML=!state.view?(state.session?`<div class="connecting-stage">${brand(true)}<p>正在入座，稍等一会儿…</p></div>`:landing()):state.view.phase==='lobby'?roomView(state.view):gameView(state.view);
   shell.dataset.mode=mode;shell.classList.toggle('motion-muted',state.preferences.reduceMotion);
+  const mobileHomeSource=app.querySelector('[data-mobile-home-scene]');
+  if(mobileHomeSource)mobileHomeSource.media=mode==='home'?'(max-width:680px) and (orientation:portrait)':'not all';
   if(state.sceneMode&&state.sceneMode!==mode&&content.animate&&!reducedMotion())content.animate([{opacity:.35},{opacity:1}],{duration:180});
   state.sceneMode=mode;
   const key=state.form!=='home'?state.form:state.dialog;
@@ -676,6 +689,12 @@ async function sendAction(type,props={}) {
   }
 }
 async function handleUi(type) {
+  if(type==='toggle-sound'){
+    state.preferences.sound=!state.preferences.sound;
+    localStorage.setItem('turtle-sound',state.preferences.sound?'on':'off');
+    if(state.preferences.sound)playTone('select');
+    render();app.querySelector('[data-ui="toggle-sound"]')?.focus({preventScroll:true});return;
+  }
   if(['quick','create','join'].includes(type)) {state.returnFocus=type;state.form=type;render();return;}
   if(['settings','rules','leave'].includes(type)) {state.returnFocus=type;state.dialog=type;render();return;}
   if(type==='close-dialog') {state.form='home';state.dialog=null;render();return;}
